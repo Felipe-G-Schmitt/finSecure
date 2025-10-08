@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 require('dotenv').config()
 
-const errorHandler = require('./middlewares/errorHandler')
+const errorHandlerMiddleware = require('./middlewares/errorHandlerMiddleware')
 const loginMiddleware = require('./middlewares/loginMiddleware')
 const registerMiddleware = require('./middlewares/registerMiddleware')
 const tokenMiddleware = require('./middlewares/tokenMiddleware')
@@ -10,6 +10,7 @@ const tokenMiddleware = require('./middlewares/tokenMiddleware')
 const categoryRoutes = require('./routes/categoryRoutes')
 const transactionRoutes = require('./routes/transactionRoutes')
 const userRoutes = require('./routes/userRoutes')
+const database = require('./config/database')
 
 const app = express()
 app.use(express.json())
@@ -25,10 +26,16 @@ app.use('/api', tokenMiddleware.validateToken, transactionRoutes)
 app.use('/api', tokenMiddleware.validateToken, userRoutes)
 
 // 🔹 Middleware global de erros
-app.use(errorHandler)
+app.use(errorHandlerMiddleware)
 
 // 🔹 Inicialização do servidor
 const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
-   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`)
-})
+database.sync({ force: true })
+   .then(() => {
+      app.listen(Number(PORT), () => 
+         console.log(`🚀 Servidor rodando na porta: ${PORT}`)
+      )
+   })
+   .catch(error => {
+      console.error('Erro ao sincronizar o banco de dados:', error)
+   })

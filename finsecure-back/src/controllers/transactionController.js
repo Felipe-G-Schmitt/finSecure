@@ -1,4 +1,4 @@
-const Transaction = require('../models/TransactionModel')
+const Transaction = require('../models/transactionModel')
 const Category = require('../models/categoryModel')
 const User = require('../models/userModel')
 
@@ -111,6 +111,37 @@ class TransactionController {
          message: `Transação ID '${id}' deletada com sucesso!`,
          _links: buildLinks(baseUrl, 'transactions', transaction.id, ['POST', 'GET'])
       })
+   }
+
+   async getTransactionsByUser(req, res) {
+      try {
+         const { userId } = req.params;
+         // Validação de segurança: Garante que apenas o próprio usuário veja suas transações.
+         // Se um admin pudesse ver, a lógica de autorização seria diferente.
+         if (req.user.id !== parseInt(userId, 10)) {
+               return res.status(403).json({ message: 'Acesso não autorizado.' });
+         }
+
+         const transactions = await Transaction.findAll({ where: { userId: userId } });
+         res.status(200).json(transactions);
+      } catch (error) {
+         res.status(500).json({ message: 'Erro ao buscar transações do usuário.', error });
+      }
+   }
+
+   async getTransactionsByCategory(req, res) {
+      try {
+         const { categoryId } = req.params;
+         const transactions = await Transaction.findAll({
+               where: {
+                  categoryId: categoryId,
+                  userId: req.user.id // Garante que busca apenas na categoria do usuário logado
+               }
+         });
+         res.status(200).json(transactions);
+      } catch (error) {
+         res.status(500).json({ message: 'Erro ao buscar transações da categoria.', error });
+      }
    }
 }
 

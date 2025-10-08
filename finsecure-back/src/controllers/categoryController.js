@@ -1,5 +1,5 @@
 const Category = require('../models/categoryModel')
-const Transaction = require('../models/TransactionModel')
+const Transaction = require('../models/transactionModel')
 const ConflictError = require('../errors/conflictError')
 const ForbiddenError = require('../errors/forbiddenError')
 const MissingValuesError = require('../errors/missingValuesError')
