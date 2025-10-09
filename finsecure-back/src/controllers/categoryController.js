@@ -38,13 +38,19 @@ class CategoryController {
    }
 
    async createCategory(req, res) {
-      const { name } = req.body
-      if (!name) throw new MissingValuesError({ name })
+      const { name, type } = req.body
 
-      const existing = await Category.findOne({ where: { name } })
-      if (existing) throw new ConflictError(`Categoria '${name}' já existe!`)
+      if (!name || !type) throw new MissingValuesError({ name, type })
 
-      const category = await Category.create({ name })
+      if (!['receita', 'despesa'].includes(type))
+         throw new ConflictError(`O tipo '${type}' é inválido! Use 'receita' ou 'despesa'.`)
+
+      const existingCategory = await Category.findOne({ where: { name } })
+
+      if (existingCategory)
+         throw new ConflictError(`Já existe uma categoria com o nome '${name}'!`)
+
+      const category = await Category.create({ name, type })
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
 
       return res.status(201).json({

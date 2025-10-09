@@ -26,7 +26,7 @@ app.use('/api', tokenMiddleware.validateToken, userRoutes)
 app.use(errorHandlerMiddleware)
 
 const PORT = process.env.PORT || 3001
-database.sync({ force: true })
+database.sync({ force: false })
    .then(() => {
       app.listen(Number(PORT), () => 
          console.log(`🚀 Servidor rodando na porta: ${PORT}`)

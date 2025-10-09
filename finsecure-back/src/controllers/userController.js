@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const ConflictError = require('../errors/conflictError')
 const ForbiddenError = require('../errors/forbiddenError')
 const MissingValuesError = require('../errors/missingValuesError')
