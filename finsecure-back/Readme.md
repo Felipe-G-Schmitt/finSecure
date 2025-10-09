@@ -1,9 +1,9 @@
 # 💰 Backend - FinSecure
 
-Este projeto é o backend de uma aplicação web de finanças pessoais, responsável por gerenciar **usuários**, **categorias** e **transações**.
+Este projeto é o backend de uma aplicação web de finanças pessoais, responsável por gerenciar **categorias** e **transações**.
 Ele foi desenvolvido utilizando **Node.js** com **Express**, aplicando uma estrutura modular para facilitar a manutenção e escalabilidade.
 
-**Última Atualização:** 07 Out. 2025
+**Última Atualização:** 09 Out. 2025
 
 ---
 
@@ -24,7 +24,7 @@ Ele foi desenvolvido utilizando **Node.js** com **Express**, aplicando uma estru
 ## 📁 Estrutura do Projeto
 
 ```bash
-finSecure_backend/ 
+finSecure-back/ 
 │-- src/ 
 │ ├── config/               # Configurações do projeto (DB, .env, etc.)
 │ ├── controllers/          # Lógica de controle de cada rota
@@ -42,15 +42,33 @@ finSecure_backend/
 
 1. **Clone o repositório**  
    ```bash
-   git clone git@github.com:Felipe-G-Schmitt/finSecure_Backend.git
+   git clone https://github.com/Felipe-G-Schmitt/finSecure
    ```
 
-2. **Instalar dependências**  
+2. **Abra a pasta**  
+   ```bash
+   cd finSecure/finsecure-back
+   ```
+
+3. **Instalar dependências**  
    ```bash
    npm install
    ```
 
-3. **Iniciar servidor**  
+4. **Crie o arquivo .env**:
+   ```env
+   DB_NAME=finSecure
+   DB_USER=root
+   DB_PASSWORD=
+   DB_HOST=localhost
+   DB_DIALECT=mysql
+   DB_LOGGING=true
+  
+   API_PORT=3001
+   JWT_SECRET_KEY=glcodelab
+   ```
+
+5. **Iniciar servidor**  
    ```bash
    npm start
    ```

@@ -7,7 +7,6 @@ const { buildLinks } = require("../utils/linksHelper");
 class TransactionController {
   async getAllTransactions(req, res) {
     const transactions = await Transaction.findAll({
-      attributes: { exclude: ["receiptData"] },
       include: [{ model: Category, as: "category" }],
     });
     const baseUrl = `${req.protocol}://${req.get("host")}/api`;
