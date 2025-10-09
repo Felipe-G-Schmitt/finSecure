@@ -6,6 +6,7 @@ const errorHandlerMiddleware = require("./middlewares/errorHandlerMiddleware");
 const loginMiddleware = require("./middlewares/loginMiddleware");
 const registerMiddleware = require("./middlewares/registerMiddleware");
 const tokenMiddleware = require("./middlewares/tokenMiddleware");
+const xssSanitizer = require('./middlewares/xssSanitizerMiddleware');
 
 const categoryRoutes = require("./routes/categoryRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
@@ -15,6 +16,8 @@ const database = require("./config/database");
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+app.use(xssSanitizer);
 
 app.post("/api/login", loginMiddleware.login);
 app.post("/api/register", registerMiddleware.register);
