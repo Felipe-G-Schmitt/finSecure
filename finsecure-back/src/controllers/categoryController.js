@@ -9,7 +9,7 @@ const { buildLinks } = require('../utils/linksHelper')
 
 class CategoryController {
    async getAllCategories(req, res) {
-      const categories = await Category.findAll()
+      const categories = await Category.findAll({ order: [['id', 'ASC']] })
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
 
       const result = categories.map(c => ({
@@ -46,14 +46,14 @@ class CategoryController {
          throw new ConflictError(`O tipo '${type}' é inválido! Use 'receita' ou 'despesa'.`)
 
       const existingCategory = await Category.findOne({ where: { name } })
-
       if (existingCategory)
          throw new ConflictError(`Já existe uma categoria com o nome '${name}'!`)
 
       const category = await Category.create({ name, type })
-      const baseUrl = `${req.protocol}://${req.get('host')}/api`
 
+      const baseUrl = `${req.protocol}://${req.get('host')}/api`
       return res.status(201).json({
+         message: 'Categoria criada com sucesso!',
          category,
          _links: buildLinks(baseUrl, 'categories', category.id)
       })
@@ -72,12 +72,14 @@ class CategoryController {
       if (duplicate && duplicate.id !== id)
          throw new ConflictError(`Já existe uma categoria com o nome '${name}'!`)
 
-      category.name = name
-      category.type = type
-      await category.save()
+      if (!['receita', 'despesa'].includes(type))
+         throw new ConflictError(`O tipo '${type}' é inválido! Use 'receita' ou 'despesa'.`)
+
+      await category.update({ name, type })
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
       return res.status(200).json({
+         message: `Categoria ID '${id}' atualizada com sucesso!`,
          category,
          _links: buildLinks(baseUrl, 'categories', category.id)
       })
@@ -99,7 +101,7 @@ class CategoryController {
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
       return res.status(200).json({
          message: `Categoria ID '${id}' deletada com sucesso!`,
-         _links: buildLinks(baseUrl, 'categories', category.id, ['POST', 'GET'])
+         _links: buildLinks(baseUrl, 'categories', id, ['POST', 'GET'])
       })
    }
 }

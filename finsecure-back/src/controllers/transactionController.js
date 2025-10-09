@@ -1,16 +1,13 @@
 const Transaction = require('../models/transactionModel')
 const Category = require('../models/categoryModel')
-const User = require('../models/userModel')
-
 const MissingValuesError = require('../errors/missingValuesError')
 const NotFoundError = require('../errors/notFoundError')
-
 const { buildLinks } = require('../utils/linksHelper')
 
 class TransactionController {
    async getAllTransactions(req, res) {
       const transactions = await Transaction.findAll({
-         include: [Category, User]
+         include: [{ model: Category, as: 'category' }]
       })
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
 
@@ -29,9 +26,10 @@ class TransactionController {
       const id = Number(req.params.id)
       if (!id) throw new MissingValuesError({ id })
 
-      const transaction = await Transaction.findByPk(id, { include: [Category, User] })
-      if (!transaction)
-         throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
+      const transaction = await Transaction.findByPk(id, {
+         include: [{ model: Category, as: 'category' }]
+      })
+      if (!transaction) throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
       return res.status(200).json({
@@ -41,22 +39,22 @@ class TransactionController {
    }
 
    async createTransaction(req, res) {
-      const { amount, type, description, categoryId, userId } = req.body
-      if (!amount || !type || !categoryId || !userId)
-         throw new MissingValuesError({ amount, type, categoryId, userId })
+      const { value, type, description, categoryId, date, receiptPath } = req.body
+
+      if (!value || !type || !categoryId || !date) {
+         throw new MissingValuesError({ value, type, categoryId, date })
+      }
 
       const category = await Category.findByPk(categoryId)
-      const user = await User.findByPk(userId)
-
       if (!category) throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`)
-      if (!user) throw new NotFoundError(`Usuário ID '${userId}' não encontrado!`)
 
       const transaction = await Transaction.create({
-         amount,
+         value,
          type,
          description,
          categoryId,
-         userId
+         date,
+         receiptPath: receiptPath || null
       })
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
@@ -68,26 +66,19 @@ class TransactionController {
 
    async updateTransaction(req, res) {
       const id = Number(req.params.id)
-      const { amount, type, description, categoryId, userId } = req.body
+      const { value, type, description, categoryId } = req.body
 
-      if (!id || !amount || !type || !categoryId || !userId)
-         throw new MissingValuesError({ id, amount, type, categoryId, userId })
+      if (!id || !value || !type || !categoryId)
+         throw new MissingValuesError({ id, value, type, categoryId })
 
       const transaction = await Transaction.findByPk(id)
       if (!transaction)
          throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
 
       const category = await Category.findByPk(categoryId)
-      const user = await User.findByPk(userId)
       if (!category) throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`)
-      if (!user) throw new NotFoundError(`Usuário ID '${userId}' não encontrado!`)
 
-      transaction.amount = amount
-      transaction.type = type
-      transaction.description = description
-      transaction.categoryId = categoryId
-      transaction.userId = userId
-      await transaction.save()
+      await transaction.update({ value, type, description, categoryId })
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
       return res.status(200).json({
@@ -114,34 +105,27 @@ class TransactionController {
    }
 
    async getTransactionsByUser(req, res) {
-      try {
-         const { userId } = req.params;
-         // Validação de segurança: Garante que apenas o próprio usuário veja suas transações.
-         // Se um admin pudesse ver, a lógica de autorização seria diferente.
-         if (req.user.id !== parseInt(userId, 10)) {
-               return res.status(403).json({ message: 'Acesso não autorizado.' });
-         }
+      const { userId } = req.params
+      if (!userId) throw new MissingValuesError({ userId })
 
-         const transactions = await Transaction.findAll({ where: { userId: userId } });
-         res.status(200).json(transactions);
-      } catch (error) {
-         res.status(500).json({ message: 'Erro ao buscar transações do usuário.', error });
-      }
+      const transactions = await Transaction.findAll({
+         where: { userId },
+         include: [{ model: Category, as: 'category' }]
+      })
+
+      return res.status(200).json(transactions)
    }
 
    async getTransactionsByCategory(req, res) {
-      try {
-         const { categoryId } = req.params;
-         const transactions = await Transaction.findAll({
-               where: {
-                  categoryId: categoryId,
-                  userId: req.user.id // Garante que busca apenas na categoria do usuário logado
-               }
-         });
-         res.status(200).json(transactions);
-      } catch (error) {
-         res.status(500).json({ message: 'Erro ao buscar transações da categoria.', error });
-      }
+      const { categoryId } = req.params
+      if (!categoryId) throw new MissingValuesError({ categoryId })
+
+      const transactions = await Transaction.findAll({
+         where: { categoryId },
+         include: [{ model: Category, as: 'category' }]
+      })
+
+      return res.status(200).json(transactions)
    }
 }
 
