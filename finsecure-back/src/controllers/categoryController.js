@@ -61,9 +61,9 @@ class CategoryController {
 
    async updateCategory(req, res) {
       const id = Number(req.params.id)
-      const { name } = req.body
+      const { name, type } = req.body
 
-      if (!id || !name) throw new MissingValuesError({ id, name })
+      if (!id || !name || !type) throw new MissingValuesError({ id, name, type })
 
       const category = await Category.findByPk(id)
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
@@ -73,6 +73,7 @@ class CategoryController {
          throw new ConflictError(`Já existe uma categoria com o nome '${name}'!`)
 
       category.name = name
+      category.type = type
       await category.save()
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
