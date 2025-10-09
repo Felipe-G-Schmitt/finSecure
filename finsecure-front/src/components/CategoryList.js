@@ -1,22 +1,20 @@
-import React from 'react';
+import { api } from '../services/api'
 
-import api from '../services/api';
-
-const CategoryList = ({ categories, onEdit, fetchCategories, isLoading }) => {
+export function CategoryList ({ categories, onEdit, fetchCategories, isLoading }) {
     const handleDelete = async (id) => {
         if (window.confirm('Tem a certeza de que deseja excluir esta categoria?')) {
             try {
-                await api.delete(`/categories/${id}`);
-                fetchCategories();
+                await api.delete(`/categories/${id}`)
+                fetchCategories()
             } catch (error) {
-                console.error('Erro ao excluir categoria:', error);
-                alert('Erro ao excluir categoria. Verifique se não está a ser utilizada por alguma transação.');
+                console.error('Erro ao excluir categoria:', error)
+                alert('Erro ao excluir categoria. Verifique se não está a ser utilizada por alguma transação.')
             }
         }
-    };
+    }
 
     if (isLoading) {
-        return <div className="card"><p>A carregar categorias...</p></div>;
+        return <div className="card"><p>A carregar categorias...</p></div>
     }
 
     return (
@@ -43,7 +41,5 @@ const CategoryList = ({ categories, onEdit, fetchCategories, isLoading }) => {
                 )}
             </ul>
         </div>
-    );
-};
-
-export default CategoryList;
+    )
+}

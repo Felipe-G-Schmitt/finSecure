@@ -1,21 +1,19 @@
-import React from 'react';
+import '../styles/Balance.css'
 
-import '../styles/Balance.css';
-
-const Balance = ({ transactions }) => {
+export function Balance({ transactions }) {
     const { total, receita, despesa } = transactions.reduce(
         (acc, { transaction }) => {
-            const value = parseFloat(transaction.value);
+            const value = parseFloat(transaction.value)
             if (transaction.type === 'receita') {
-                acc.receita += value;
+                acc.receita += value
             } else {
-                acc.despesa += value;
+                acc.despesa += value
             }
-            acc.total = acc.receita - acc.despesa;
-            return acc;
+            acc.total = acc.receita - acc.despesa
+            return acc
         },
         { total: 0, receita: 0, despesa: 0 }
-    );
+    )
 
     return (
         <div className="balance-container">
@@ -34,7 +32,5 @@ const Balance = ({ transactions }) => {
                 <p className="despesa">R$ {despesa.toFixed(2)}</p>
             </div>
         </div>
-    );
-};
-
-export default Balance;
+    )
+}

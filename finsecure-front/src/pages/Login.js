@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
+import { useState } from 'react'
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 
-import api from '../services/api';
+import { api } from '../services/api'
 
-import '../styles/Form.css';
+import '../styles/Form.css'
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+export function Login() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const navigate = useNavigate()
 
     const handleLogin = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         try {
-            const response = await api.post('/login', { email, password });
-            localStorage.setItem('token', response.data.token);
-            navigate('/dashboard');
+            const response = await api.post('/login', { email, password })
+            localStorage.setItem('token', response.data.token)
+            navigate('/dashboard')
         } catch (error) {
-            console.error('Erro no login:', error);
-            alert('Falha no login. Verifique as suas credenciais.');
+            console.error('Erro no login:', error)
+            alert('Falha no login. Verifique as suas credenciais.')
         }
-    };
+    }
 
     return (
         <div className="form-container">
@@ -47,7 +47,5 @@ const Login = () => {
                 <p>Não tem uma conta? <a href="/register">Registe-se</a></p>
             </div>
         </div>
-    );
-};
-
-export default Login;
+    )
+}

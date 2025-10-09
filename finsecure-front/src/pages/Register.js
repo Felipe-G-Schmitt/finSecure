@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
+import { useState } from 'react'
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 
-import api from '../services/api';
+import { api } from '../services/api'
 
-import '../styles/Form.css';
+import '../styles/Form.css'
 
-const Register = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+export function Register() {
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const navigate = useNavigate()
 
     const handleRegister = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         try {
-            await api.post('/register', { name, email, password });
-            navigate('/login');
+            await api.post('/register', { name, email, password })
+            navigate('/login')
         } catch (error) {
-            console.error('Erro no registo:', error);
-            alert('Erro ao registar. Tente novamente.');
+            console.error('Erro no registo:', error)
+            alert('Erro ao registar. Tente novamente.')
         }
-    };
+    }
 
     return (
         <div className="form-container">
@@ -54,7 +54,5 @@ const Register = () => {
                 <p>Já tem uma conta? <a href="/login">Faça login</a></p>
             </div>
         </div>
-    );
-};
-
-export default Register;
+    )
+}

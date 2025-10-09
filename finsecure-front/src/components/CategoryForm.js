@@ -1,42 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
-import api from '../services/api';
+import { api } from '../services/api'
 
-const CategoryForm = ({ fetchCategories, currentCategory, setCurrentCategory }) => {
-    const [name, setName] = useState('');
-    const [type, setType] = useState('despesa');
+export function CategoryForm({ fetchCategories, currentCategory, setCurrentCategory }) {
+    const [name, setName] = useState('')
+    const [type, setType] = useState('despesa')
 
     useEffect(() => {
         if (currentCategory) {
-            setName(currentCategory.name);
-            setType(currentCategory.type);
+            setName(currentCategory.name)
+            setType(currentCategory.type)
         } else {
-            setName('');
-            setType('despesa');
+            setName('')
+            setType('despesa')
         }
-    }, [currentCategory]);
+    }, [currentCategory])
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const categoryData = { name, type };
+        e.preventDefault()
+        const categoryData = { name, type }
 
         try {
             if (currentCategory) {
-                await api.put(`/categories/${currentCategory.id}`, categoryData);
+                await api.put(`/categories/${currentCategory.id}`, categoryData)
             } else {
-                await api.post('/categories', categoryData);
+                await api.post('/categories', categoryData)
             }
-            fetchCategories();
-            handleCancel();
+            fetchCategories()
+            handleCancel()
         } catch (error) {
-            console.error('Erro ao salvar categoria:', error);
-            alert('Erro ao salvar categoria.');
+            console.error('Erro ao salvar categoria:', error)
+            alert('Erro ao salvar categoria.')
         }
-    };
+    }
 
     const handleCancel = () => {
-        setCurrentCategory(null);
-    };
+        setCurrentCategory(null)
+    }
 
     return (
         <div className="category-form card">
@@ -65,7 +65,5 @@ const CategoryForm = ({ fetchCategories, currentCategory, setCurrentCategory }) 
                 </div>
             </form>
         </div>
-    );
-};
-
-export default CategoryForm;
+    )
+}

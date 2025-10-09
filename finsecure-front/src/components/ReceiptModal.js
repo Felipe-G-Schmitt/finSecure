@@ -1,47 +1,43 @@
-import React from 'react';
+import '../styles/ReceiptModal.css'
 
-import '../styles/ReceiptModal.css';
-
-const ReceiptModal = ({ fileUrl, fileType, onClose }) => {
+export function ReceiptModal({ fileUrl, fileType, onClose }) {
     if (!fileUrl) {
-        return null;
+        return null
     }
 
     const handleBackdropClick = (e) => {
         if (e.target === e.currentTarget) {
-            onClose();
+            onClose()
         }
-    };
+    }
 
     const renderContent = () => {
         if (fileType && fileType.startsWith('image/')) {
-            return <img src={fileUrl} alt="Comprovativo da Transação" />;
+            return <img src={fileUrl} alt="Comprovativo da Transação" />
         }
         if (fileType === 'application/pdf') {
             return (
                 <object data={fileUrl} type="application/pdf" width="100%" height="100%">
                     <p>O seu navegador não possui um plugin para PDF. Pode <a href={fileUrl}>clicar aqui para descarregar o PDF.</a></p>
                 </object>
-            );
+            )
         }
         return (
             <div style={{ padding: '2rem', textAlign: 'center' }}>
                 <p>Não é possível exibir este tipo de ficheiro diretamente.</p>
                 <a href={fileUrl} download="comprovativo" className="button">Clique aqui para descarregar o ficheiro</a>
             </div>
-        );
-    };
+        )
+    }
 
     return (
         <div className="modal-backdrop" onClick={handleBackdropClick}>
             <div className="modal-content">
                 <button className="modal-close-button" onClick={onClose}>
-                    &times;
+                    &times
                 </button>
                 {renderContent()}
             </div>
         </div>
-    );
-};
-
-export default ReceiptModal;
+    )
+}

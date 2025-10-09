@@ -1,59 +1,59 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react'
 
-import api from '../services/api';
+import { api } from '../services/api'
 
-import '../styles/Transaction.css';
+import '../styles/Transaction.css'
 
-const TransactionForm = ({ categories, fetchTransactions }) => {
-    const [description, setDescription] = useState('');
-    const [value, setValue] = useState('');
-    const [date, setDate] = useState('');
-    const [type, setType] = useState('despesa');
-    const [categoryId, setCategoryId] = useState('');
-    const [receipt, setReceipt] = useState(null);
+export function TransactionForm({ categories, fetchTransactions }) {
+    const [description, setDescription] = useState('')
+    const [value, setValue] = useState('')
+    const [date, setDate] = useState('')
+    const [type, setType] = useState('despesa')
+    const [categoryId, setCategoryId] = useState('')
+    const [receipt, setReceipt] = useState(null)
 
     const filteredCategories = useMemo(() => {
-        if (!Array.isArray(categories)) return [];
-        return categories.filter(({ category }) => category.type === type);
-    }, [type, categories]);
+        if (!Array.isArray(categories)) return []
+        return categories.filter(({ category }) => category.type === type)
+    }, [type, categories])
 
     const handleFileChange = (e) => {
-        setReceipt(e.target.files[0]);
-    };
+        setReceipt(e.target.files[0])
+    }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('description', description);
-        formData.append('value', parseFloat(value));
-        formData.append('date', date);
-        formData.append('type', type);
-        formData.append('categoryId', categoryId);
+        e.preventDefault()
+        const formData = new FormData()
+        formData.append('description', description)
+        formData.append('value', parseFloat(value))
+        formData.append('date', date)
+        formData.append('type', type)
+        formData.append('categoryId', categoryId)
         if (receipt) {
-            formData.append('receipt', receipt);
+            formData.append('receipt', receipt)
         }
 
         try {
             await api.post('/transactions', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            fetchTransactions();
-            setDescription('');
-            setValue('');
-            setDate('');
-            setType('despesa');
-            setCategoryId('');
-            setReceipt(null);
-            e.target.reset();
+            })
+            fetchTransactions()
+            setDescription('')
+            setValue('')
+            setDate('')
+            setType('despesa')
+            setCategoryId('')
+            setReceipt(null)
+            e.target.reset()
         } catch (error) {
-            console.error('Erro ao criar transação:', error);
-            alert('Erro ao adicionar transação.');
+            console.error('Erro ao criar transação:', error)
+            alert('Erro ao adicionar transação.')
         }
-    };
+    }
 
     const handleTypeChange = (e) => {
-        setType(e.target.value);
-        setCategoryId('');
+        setType(e.target.value)
+        setCategoryId('')
     }
 
     return (
@@ -86,7 +86,5 @@ const TransactionForm = ({ categories, fetchTransactions }) => {
                 <button type="submit" className="button button-primary" disabled={filteredCategories.length === 0}>Adicionar</button>
             </form>
         </div>
-    );
-};
-
-export default TransactionForm;
+    )
+}

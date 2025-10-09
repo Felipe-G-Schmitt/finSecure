@@ -1,46 +1,46 @@
-import React, { useState } from 'react';
+import { useState } from 'react'
 
-import api from '../services/api';
+import { api } from '../services/api'
 
-import ReceiptModal from './ReceiptModal';
+import { ReceiptModal } from './ReceiptModal'
 
-import '../styles/Transaction.css';
+import '../styles/Transaction.css'
 
-const TransactionList = ({ transactions }) => {
-    const [modalFileUrl, setModalFileUrl] = useState(null);
-    const [modalFileType, setModalFileType] = useState(null);
-    const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
+export function TransactionList({ transactions }) {
+    const [modalFileUrl, setModalFileUrl] = useState(null)
+    const [modalFileType, setModalFileType] = useState(null)
+    const [isLoadingReceipt, setIsLoadingReceipt] = useState(false)
 
     const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        return new Date(dateString).toLocaleDateString('pt-BR', options);
-    };
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
+        return new Date(dateString).toLocaleDateString('pt-BR', options)
+    }
 
     const handleViewReceipt = async (receiptUrl) => {
-        setIsLoadingReceipt(true);
+        setIsLoadingReceipt(true)
         try {
             const response = await api.get(receiptUrl, {
                 responseType: 'blob',
-            });
-            const fileType = response.data.type;
-            const fileUrl = URL.createObjectURL(response.data);
-            setModalFileUrl(fileUrl);
-            setModalFileType(fileType);
+            })
+            const fileType = response.data.type
+            const fileUrl = URL.createObjectURL(response.data)
+            setModalFileUrl(fileUrl)
+            setModalFileType(fileType)
         } catch (error) {
-            console.error("Erro ao buscar o comprovativo:", error);
-            alert("Não foi possível carregar o comprovativo.");
+            console.error("Erro ao buscar o comprovativo:", error)
+            alert("Não foi possível carregar o comprovativo.")
         } finally {
-            setIsLoadingReceipt(false);
+            setIsLoadingReceipt(false)
         }
-    };
+    }
 
     const handleCloseModal = () => {
         if (modalFileUrl) {
-            URL.revokeObjectURL(modalFileUrl);
+            URL.revokeObjectURL(modalFileUrl)
         }
-        setModalFileUrl(null);
-        setModalFileType(null);
-    };
+        setModalFileUrl(null)
+        setModalFileType(null)
+    }
 
     return (
         <>
@@ -80,7 +80,5 @@ const TransactionList = ({ transactions }) => {
                 onClose={handleCloseModal}
             />
         </>
-    );
-};
-
-export default TransactionList;
+    )
+}
