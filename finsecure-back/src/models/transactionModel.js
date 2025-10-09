@@ -1,44 +1,67 @@
-const { DataTypes } = require('sequelize')
-const database = require('../config/database')
-const Category = require('./categoryModel')
+const { DataTypes } = require("sequelize");
+const database = require("../config/database");
+const Category = require("./categoryModel");
 
-const Transaction = database.define('transaction', {
-   id: {
+const Transaction = database.define(
+  "transaction",
+  {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-   },
-   description: {
+    },
+    description: {
       type: DataTypes.STRING,
       allowNull: false,
-   },
-   value: {
+    },
+    value: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
-   },
-   date: {
+    },
+    date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
-   },
-   type: {
-      type: DataTypes.ENUM('receita', 'despesa'),
+    },
+    type: {
+      type: DataTypes.ENUM("receita", "despesa"),
       allowNull: false,
-   },
-   receiptPath: {
+    },
+    receiptData: {
+      type: DataTypes.BLOB("long"),
+      allowNull: true,
+    },
+    receiptMimeType: {
       type: DataTypes.STRING,
       allowNull: true,
-   },
-   categoryId: {
+    },
+    receiptUrl: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        if (!this.getDataValue("receiptData")) {
+          return null;
+        }
+        const baseUrl = process.env.APP_URL || "http://localhost:3001";
+        const id = this.getDataValue("id");
+        return `${baseUrl}/api/transactions/${id}/receipt`;
+      },
+    },
+    categoryId: {
       type: DataTypes.INTEGER,
       references: {
-         model: 'categories',
-         key: 'id',
+        model: "categories",
+        key: "id",
       },
       allowNull: false,
-   },
-})
+    },
+  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
 
-Transaction.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' })
-Category.hasMany(Transaction, { foreignKey: 'categoryId', as: 'transactions' })
+Transaction.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
+Category.hasMany(Transaction, { foreignKey: "categoryId", as: "transactions" });
 
-module.exports = Transaction
+module.exports = Transaction;

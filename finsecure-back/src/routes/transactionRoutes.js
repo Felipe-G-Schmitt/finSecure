@@ -1,17 +1,14 @@
-const express = require('express')
-const router = express.Router()
-const transactionController = require('../controllers/transactionController')
-const upload = require('../middlewares/uploadMiddleware')
+const express = require('express');
+const router = express.Router();
+const transactionController = require('../controllers/transactionController');
+const upload = require('../middlewares/uploadMiddleware'); 
 
-router.get('/transactions', transactionController.getAllTransactions.bind(transactionController))
-router.get('/transactions/:id', transactionController.getTransactionById.bind(transactionController))
+router.get('/transactions', transactionController.getAllTransactions);
+router.post('/transactions', upload.single('receipt'), transactionController.createTransaction); 
+router.get('/transactions/:id', transactionController.getTransactionById);
+router.put('/transactions/:id', upload.single('receipt'), transactionController.updateTransaction);
+router.delete('/transactions/:id', transactionController.deleteTransaction);
 
-router.post('/transactions', upload.single('receipt'), transactionController.createTransaction.bind(transactionController))
-router.put('/transactions/:id', upload.single('receipt'), transactionController.updateTransaction.bind(transactionController))
+router.get('/transactions/:id/receipt', transactionController.getTransactionReceipt);
 
-router.delete('/transactions/:id', transactionController.deleteTransaction.bind(transactionController))
-
-router.get('/transactions/user/:userId', transactionController.getTransactionsByUser.bind(transactionController))
-router.get('/transactions/category/:categoryId', transactionController.getTransactionsByCategory.bind(transactionController))
-
-module.exports = router
+module.exports = router;

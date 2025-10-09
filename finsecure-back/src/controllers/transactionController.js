@@ -1,132 +1,148 @@
-const Transaction = require('../models/transactionModel')
-const Category = require('../models/categoryModel')
-const MissingValuesError = require('../errors/missingValuesError')
-const NotFoundError = require('../errors/notFoundError')
-const { buildLinks } = require('../utils/linksHelper')
+const Transaction = require("../models/transactionModel");
+const Category = require("../models/categoryModel");
+const MissingValuesError = require("../errors/missingValuesError");
+const NotFoundError = require("../errors/notFoundError");
+const { buildLinks } = require("../utils/linksHelper");
 
 class TransactionController {
-   async getAllTransactions(req, res) {
-      const transactions = await Transaction.findAll({
-         include: [{ model: Category, as: 'category' }]
-      })
-      const baseUrl = `${req.protocol}://${req.get('host')}/api`
+  async getAllTransactions(req, res) {
+    const transactions = await Transaction.findAll({
+      attributes: { exclude: ["receiptData"] },
+      include: [{ model: Category, as: "category" }],
+    });
+    const baseUrl = `${req.protocol}://${req.get("host")}/api`;
 
-      const result = transactions.map(t => ({
-         transaction: t,
-         _links: buildLinks(baseUrl, 'transactions', t.id)
-      }))
+    const result = transactions.map((t) => ({
+      transaction: t,
+      _links: buildLinks(baseUrl, "transactions", t.id),
+    }));
 
-      return res.status(200).json({
-         count: transactions.length,
-         items: result
-      })
-   }
+    return res.status(200).json({
+      count: transactions.length,
+      items: result,
+    });
+  }
 
-   async getTransactionById(req, res) {
-      const id = Number(req.params.id)
-      if (!id) throw new MissingValuesError({ id })
+  async getTransactionById(req, res) {
+    const id = Number(req.params.id);
+    if (!id) throw new MissingValuesError({ id });
 
-      const transaction = await Transaction.findByPk(id, {
-         include: [{ model: Category, as: 'category' }]
-      })
-      if (!transaction) throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
+    const transaction = await Transaction.findByPk(id, {
+      include: [{ model: Category, as: "category" }],
+    });
+    if (!transaction)
+      throw new NotFoundError(`Transação ID '${id}' não encontrada!`);
 
-      const baseUrl = `${req.protocol}://${req.get('host')}/api`
-      return res.status(200).json({
-         transaction,
-         _links: buildLinks(baseUrl, 'transactions', transaction.id)
-      })
-   }
+    const baseUrl = `${req.protocol}://${req.get("host")}/api`;
+    return res.status(200).json({
+      transaction,
+      _links: buildLinks(baseUrl, "transactions", transaction.id),
+    });
+  }
 
-   async createTransaction(req, res) {
-      const { value, type, description, categoryId, date, receiptPath } = req.body
+  async createTransaction(req, res) {
+    const { value, type, description, categoryId, date } = req.body;
 
-      if (!value || !type || !categoryId || !date) {
-         throw new MissingValuesError({ value, type, categoryId, date })
-      }
+    if (!value || !type || !categoryId || !date) {
+      throw new MissingValuesError({ value, type, categoryId, date });
+    }
 
-      const category = await Category.findByPk(categoryId)
-      if (!category) throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`)
+    const category = await Category.findByPk(categoryId);
+    if (!category)
+      throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`);
+    const transactionData = {
+      value,
+      type,
+      description,
+      categoryId,
+      date,
+    };
 
-      const transaction = await Transaction.create({
-         value,
-         type,
-         description,
-         categoryId,
-         date,
-         receiptPath: receiptPath || null
-      })
+    if (req.file) {
+      transactionData.receiptData = req.file.buffer;
+      transactionData.receiptMimeType = req.file.mimetype;
+    }
 
-      const baseUrl = `${req.protocol}://${req.get('host')}/api`
-      return res.status(201).json({
-         transaction,
-         _links: buildLinks(baseUrl, 'transactions', transaction.id)
-      })
-   }
+    const transaction = await Transaction.create(transactionData);
 
-   async updateTransaction(req, res) {
-      const id = Number(req.params.id)
-      const { value, type, description, categoryId } = req.body
+    const baseUrl = `${req.protocol}://${req.get("host")}/api`;
+    return res.status(201).json({
+      transaction,
+      _links: buildLinks(baseUrl, "transactions", transaction.id),
+    });
+  }
 
-      if (!id || !value || !type || !categoryId)
-         throw new MissingValuesError({ id, value, type, categoryId })
+  async updateTransaction(req, res) {
+    const id = Number(req.params.id);
+    const { value, type, description, categoryId, date } = req.body;
 
-      const transaction = await Transaction.findByPk(id)
-      if (!transaction)
-         throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
+    if (!id) throw new MissingValuesError({ id });
 
-      const category = await Category.findByPk(categoryId)
-      if (!category) throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`)
+    const transaction = await Transaction.findByPk(id);
+    if (!transaction)
+      throw new NotFoundError(`Transação ID '${id}' não encontrada!`);
 
-      await transaction.update({ value, type, description, categoryId })
+    if (categoryId) {
+      const category = await Category.findByPk(categoryId);
+      if (!category)
+        throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`);
+    }
 
-      const baseUrl = `${req.protocol}://${req.get('host')}/api`
-      return res.status(200).json({
-         transaction,
-         _links: buildLinks(baseUrl, 'transactions', transaction.id)
-      })
-   }
+    if (req.file) {
+      transaction.receiptData = req.file.buffer;
+      transaction.receiptMimeType = req.file.mimetype;
+    }
 
-   async deleteTransaction(req, res) {
-      const id = Number(req.params.id)
-      if (!id) throw new MissingValuesError({ id })
+    transaction.value = value || transaction.value;
+    transaction.type = type || transaction.type;
+    transaction.description = description || transaction.description;
+    transaction.categoryId = categoryId || transaction.categoryId;
+    transaction.date = date || transaction.date;
 
-      const transaction = await Transaction.findByPk(id)
-      if (!transaction)
-         throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
+    await transaction.save();
 
-      await transaction.destroy()
+    const baseUrl = `${req.protocol}://${req.get("host")}/api`;
+    return res.status(200).json({
+      transaction,
+      _links: buildLinks(baseUrl, "transactions", transaction.id),
+    });
+  }
 
-      const baseUrl = `${req.protocol}://${req.get('host')}/api`
-      return res.status(200).json({
-         message: `Transação ID '${id}' deletada com sucesso!`,
-         _links: buildLinks(baseUrl, 'transactions', transaction.id, ['POST', 'GET'])
-      })
-   }
+  async deleteTransaction(req, res) {
+    const id = Number(req.params.id);
+    if (!id) throw new MissingValuesError({ id });
 
-   async getTransactionsByUser(req, res) {
-      const { userId } = req.params
-      if (!userId) throw new MissingValuesError({ userId })
+    const transaction = await Transaction.findByPk(id);
+    if (!transaction) {
+      throw new NotFoundError(`Transação ID '${id}' não encontrada!`);
+    }
 
-      const transactions = await Transaction.findAll({
-         where: { userId },
-         include: [{ model: Category, as: 'category' }]
-      })
+    await transaction.destroy();
 
-      return res.status(200).json(transactions)
-   }
+    const baseUrl = `${req.protocol}://${req.get("host")}/api`;
+    return res.status(200).json({
+      message: `Transação ID '${id}' deletada com sucesso!`,
+      _links: buildLinks(baseUrl, "transactions", null, ["POST", "GET"]),
+    });
+  }
 
-   async getTransactionsByCategory(req, res) {
-      const { categoryId } = req.params
-      if (!categoryId) throw new MissingValuesError({ categoryId })
+  async getTransactionReceipt(req, res) {
+    const id = Number(req.params.id);
+    if (!id) throw new MissingValuesError({ id });
 
-      const transactions = await Transaction.findAll({
-         where: { categoryId },
-         include: [{ model: Category, as: 'category' }]
-      })
+    const transaction = await Transaction.findByPk(id, {
+      attributes: ["receiptData", "receiptMimeType"],
+    });
 
-      return res.status(200).json(transactions)
-   }
+    if (!transaction || !transaction.receiptData) {
+      throw new NotFoundError(
+        `Recibo para a Transação ID '${id}' não encontrado!`
+      );
+    }
+
+    res.setHeader("Content-Type", transaction.receiptMimeType);
+    res.send(transaction.receiptData);
+  }
 }
 
-module.exports = new TransactionController()
+module.exports = new TransactionController();
