@@ -16,19 +16,15 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-// 🔹 Rotas públicas
-app.post('/api/login', (req, res, next) => loginMiddleware.login(req, res, next))
-app.post('/api/register', (req, res, next) => registerMiddleware.register(req, res, next))
+app.post('/api/login', loginMiddleware.login)
+app.post('/api/register', registerMiddleware.register)
 
-// 🔹 Rotas protegidas
 app.use('/api', tokenMiddleware.validateToken, categoryRoutes)
 app.use('/api', tokenMiddleware.validateToken, transactionRoutes)
 app.use('/api', tokenMiddleware.validateToken, userRoutes)
 
-// 🔹 Middleware global de erros
 app.use(errorHandlerMiddleware)
 
-// 🔹 Inicialização do servidor
 const PORT = process.env.PORT || 3001
 database.sync({ force: true })
    .then(() => {

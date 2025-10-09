@@ -24,15 +24,6 @@ const User = database.define('user', {
       type: DataTypes.STRING,
       allowNull: false,
    },
-   }, {
-   hooks: {
-      beforeCreate: async (user) => {
-         if (user.password) {
-         const salt = await bcrypt.genSalt(10)
-         user.password = await bcrypt.hash(user.password, salt)
-         }
-      },
-   },
 })
 
 User.prototype.comparePassword = function (password) {
