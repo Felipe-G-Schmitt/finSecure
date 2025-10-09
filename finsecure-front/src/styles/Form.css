@@ -1,0 +1,40 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    padding: 1rem;
+    min-height: 100vh;
+}
+
+.form-box {
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.form-box h2 {
+    margin-bottom: 2rem;
+}
+
+.form-box .form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-box p {
+    margin-top: 1.5rem;
+    color: var(--color-text-secondary);
+}
+
+.form-box p a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.form-box p a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,81 @@
+.transaction-form h3,
+.transaction-list h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+.transaction-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.transaction-form label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+}
+
+.transaction-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.transaction-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.transaction-list li:hover {
+    background-color: var(--color-background);
+    box-shadow: var(--shadow-sm);
+}
+
+.transaction-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.description {
+    font-weight: 500;
+}
+
+.date {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.value {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.value.receita {
+    color: var(--color-secondary);
+}
+
+.value.despesa {
+    color: var(--color-danger);
+}
+
+.receipt-link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    cursor: pointer;
+}
