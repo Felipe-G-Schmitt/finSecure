@@ -5,6 +5,7 @@ import { ThemeContext } from './contexts/ThemeContext'
 import { ConfirmationProvider } from './contexts/ConfirmationContext'
 
 import { Footer } from './components/Footer'
+import { LoadingSpinner } from './components/LoadingSpinner'
 
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
@@ -16,6 +17,16 @@ function App() {
         const storedTheme = localStorage.getItem('theme')
         return storedTheme || 'light'
     })
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false)
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [])
+
 
     useEffect(() => {
         document.body.classList.toggle('dark-mode', theme === 'dark')
@@ -29,15 +40,18 @@ function App() {
     const themeValue = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme])
 
     const PrivateRoute = ({ children }) => {
-        const token = localStorage.getItem('token')
-        return token ? children : <Navigate to="/login" />
+        return children;
+    }
+
+    if (isLoading) {
+        return <LoadingSpinner />;
     }
 
     return (
         <ThemeContext.Provider value={themeValue}>
             <ConfirmationProvider>
                 <Router>
-                     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
                         <main style={{ flex: 1 }}>
                             <Routes>
                                 <Route path="/login" element={<Login />} />

@@ -29,6 +29,9 @@ app.use(xssSanitizer)
 
 app.post("/api/login", loginMiddleware.login)
 app.post("/api/register", registerMiddleware.register)
+app.post("/api/logout", (req, res) => {
+  res.clearCookie('token').json({ message: 'Logout realizado com sucesso!' });
+});
 
 app.get("/api/csrf-token", CsrfMiddleware.generateToken, (req, res) => {
   res.json({ csrfToken: req.csrfToken })

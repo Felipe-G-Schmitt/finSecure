@@ -15,6 +15,14 @@ const Category = database.define('category', {
       type: DataTypes.ENUM('receita', 'despesa'),
       allowNull: false,
    },
+   userId: {
+      type: DataTypes.INTEGER,
+      references: {
+         model: 'users',
+         key: 'id'
+      },
+      allowNull: false
+   }
 })
 
 module.exports = Category

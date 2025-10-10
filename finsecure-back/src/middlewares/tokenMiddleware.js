@@ -5,8 +5,7 @@ const UnauthorizedError = require('../errors/unauthorizedError')
 
 class AuthToken {
    async validateToken(req, res, next) {
-      const authHeader = req.headers.authorization
-      const token = authHeader && authHeader.split(' ')[1]
+      const token = req.cookies.token
 
       if (!token) {
          throw new UnauthorizedError('Não autorizado! Token não fornecido.')
@@ -14,7 +13,7 @@ class AuthToken {
 
       try {
          const payload = jwt.verify(token, process.env.JWT_SECRET_KEY)
-         req.userId = payload.id // armazena o id do usuário autenticado
+         req.userId = payload.id
          next()
       } catch (error) {
          throw new UnauthorizedError('Token inválido ou expirado.')

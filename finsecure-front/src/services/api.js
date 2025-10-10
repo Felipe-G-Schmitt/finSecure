@@ -6,11 +6,6 @@ export const api = axios.create({
 })
 
 api.interceptors.request.use(async (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-    }
-
     const csrfToken = localStorage.getItem('csrfToken')
     if (csrfToken && ['POST', 'PUT', 'DELETE'].includes(config.method.toUpperCase())) {
         config.headers['x-csrf-token'] = csrfToken

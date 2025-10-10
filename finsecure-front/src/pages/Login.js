@@ -1,10 +1,7 @@
 import { useState } from 'react'
-
 import { useNavigate } from 'react-router-dom'
-
 import { api } from '../services/api'
 import { Alert } from '../components/Alert'
-
 import '../styles/Form.css'
 
 export function Login() {
@@ -16,8 +13,7 @@ export function Login() {
     const handleLogin = async (e) => {
         e.preventDefault()
         try {
-            const response = await api.post('/login', { email, password })
-            localStorage.setItem('token', response.data.token)
+            await api.post('/login', { email, password })
             navigate('/dashboard')
         } catch (error) {
             console.error('Erro no login:', error)

@@ -7,6 +7,7 @@ const { buildLinks } = require("../utils/linksHelper")
 class TransactionController {
   async getAllTransactions(req, res) {
     const transactions = await Transaction.findAll({
+      where: { userId: req.userId },
       include: [{ model: Category, as: "category" }],
     })
     const baseUrl = `${req.protocol}://${req.get("host")}/api`
@@ -26,7 +27,8 @@ class TransactionController {
     const id = Number(req.params.id)
     if (!id) throw new MissingValuesError({ id })
 
-    const transaction = await Transaction.findByPk(id, {
+    const transaction = await Transaction.findOne({
+      where: { id, userId: req.userId },
       include: [{ model: Category, as: "category" }],
     })
     if (!transaction)
@@ -46,7 +48,7 @@ class TransactionController {
       throw new MissingValuesError({ value, type, categoryId, date })
     }
 
-    const category = await Category.findByPk(categoryId)
+    const category = await Category.findOne({ where: { id: categoryId, userId: req.userId } })
     if (!category)
       throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`)
     const transactionData = {
@@ -55,6 +57,7 @@ class TransactionController {
       description,
       categoryId,
       date,
+      userId: req.userId
     }
 
     if (req.file) {
@@ -77,12 +80,12 @@ class TransactionController {
 
     if (!id) throw new MissingValuesError({ id })
 
-    const transaction = await Transaction.findByPk(id)
+    const transaction = await Transaction.findOne({ where: { id, userId: req.userId } })
     if (!transaction)
       throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
 
     if (categoryId) {
-      const category = await Category.findByPk(categoryId)
+      const category = await Category.findOne({ where: { id: categoryId, userId: req.userId } })
       if (!category)
         throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`)
     }
@@ -111,7 +114,7 @@ class TransactionController {
     const id = Number(req.params.id)
     if (!id) throw new MissingValuesError({ id })
 
-    const transaction = await Transaction.findByPk(id)
+    const transaction = await Transaction.findOne({ where: { id, userId: req.userId } })
     if (!transaction) {
       throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
     }
@@ -129,7 +132,8 @@ class TransactionController {
     const id = Number(req.params.id)
     if (!id) throw new MissingValuesError({ id })
 
-    const transaction = await Transaction.findByPk(id, {
+    const transaction = await Transaction.findOne({
+      where: { id, userId: req.userId },
       attributes: ["receiptData", "receiptMimeType"],
     })
 

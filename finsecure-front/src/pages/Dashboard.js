@@ -1,13 +1,19 @@
 import { useEffect, useState, useContext } from 'react'
+
 import { useNavigate, Link } from 'react-router-dom'
+
 import { api } from '../services/api'
+
+import { LoadingSpinner } from '../components/LoadingSpinner'
+import { Sun, Moon } from '../components/Icons'
 import { TransactionList } from '../components/TransactionList'
 import { TransactionForm } from '../components/TransactionForm'
 import { Balance } from '../components/Balance'
 import { Alert } from '../components/Alert'
+
 import { ThemeContext } from '../contexts/ThemeContext'
+
 import '../styles/Dashboard.css'
-import { Sun, Moon } from '../components/Icons'
 
 export function Dashboard() {
     const [transactions, setTransactions] = useState([])
@@ -39,9 +45,14 @@ export function Dashboard() {
         fetchData()
     }, [])
 
-    const handleLogout = () => {
-        localStorage.removeItem('token')
-        navigate('/login')
+    const handleLogout = async () => {
+        try {
+            await api.post('/logout');
+            navigate('/login');
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+            setError("Erro ao fazer logout. Tente novamente.");
+        }
     }
 
     const refreshTransactions = async () => {
@@ -58,7 +69,7 @@ export function Dashboard() {
         setCurrentTransaction(transaction)
     }
 
-    if (isLoading) return <div className="container">Carregando...</div>
+    if (isLoading) return <LoadingSpinner />
 
     return (
         <div className="dashboard container">

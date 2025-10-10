@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { api } from '../services/api'
 
 import { CategoryList } from '../components/CategoryList'
 import { CategoryForm } from '../components/CategoryForm'
+import { LoadingSpinner } from '../components/LoadingSpinner'
 
 import '../styles/Category.css'
 
@@ -13,6 +14,7 @@ export function Categories() {
     const [categories, setCategories] = useState([])
     const [currentCategory, setCurrentCategory] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
+    const navigate = useNavigate();
 
     const fetchCategories = async () => {
         try {
@@ -21,6 +23,9 @@ export function Categories() {
             setCategories(response.data.items)
         } catch (error) {
             console.error('Erro ao buscar categorias:', error)
+            if (error.response && error.response.status === 401) {
+                navigate('/login');
+            }
         } finally {
             setIsLoading(false)
         }
@@ -32,6 +37,10 @@ export function Categories() {
 
     const handleEdit = (category) => {
         setCurrentCategory(category)
+    }
+
+    if (isLoading) {
+        return <LoadingSpinner />;
     }
 
     return (

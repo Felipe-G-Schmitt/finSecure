@@ -9,7 +9,7 @@ const { buildLinks } = require('../utils/linksHelper')
 
 class CategoryController {
    async getAllCategories(req, res) {
-      const categories = await Category.findAll({ order: [['id', 'ASC']] })
+      const categories = await Category.findAll({ where: { userId: req.userId }, order: [['id', 'ASC']] })
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
 
       const result = categories.map(c => ({
@@ -27,7 +27,7 @@ class CategoryController {
       const id = Number(req.params.id)
       if (!id) throw new MissingValuesError({ id })
 
-      const category = await Category.findByPk(id)
+      const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
@@ -45,11 +45,11 @@ class CategoryController {
       if (!['receita', 'despesa'].includes(type))
          throw new ConflictError(`O tipo '${type}' é inválido! Use 'receita' ou 'despesa'.`)
 
-      const existingCategory = await Category.findOne({ where: { name } })
+      const existingCategory = await Category.findOne({ where: { name, userId: req.userId } })
       if (existingCategory)
          throw new ConflictError(`Já existe uma categoria com o nome '${name}'!`)
 
-      const category = await Category.create({ name, type })
+      const category = await Category.create({ name, type, userId: req.userId })
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
       return res.status(201).json({
@@ -65,10 +65,10 @@ class CategoryController {
 
       if (!id || !name || !type) throw new MissingValuesError({ id, name, type })
 
-      const category = await Category.findByPk(id)
+      const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 
-      const duplicate = await Category.findOne({ where: { name } })
+      const duplicate = await Category.findOne({ where: { name, userId: req.userId } })
       if (duplicate && duplicate.id !== id)
          throw new ConflictError(`Já existe uma categoria com o nome '${name}'!`)
 
@@ -89,7 +89,7 @@ class CategoryController {
       const id = Number(req.params.id)
       if (!id) throw new MissingValuesError({ id })
 
-      const category = await Category.findByPk(id)
+      const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 
       const transactions = await Transaction.findAll({ where: { categoryId: id } })

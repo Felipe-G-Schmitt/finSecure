@@ -53,6 +53,14 @@ const Transaction = database.define(
       },
       allowNull: false,
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'users',
+        key: 'id'
+      },
+      allowNull: false
+    }
   },
   {
     toJSON: {
