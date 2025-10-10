@@ -1,4 +1,11 @@
-# 💵 FinSecure 🔒
+# 💰 FinSecure - © 2025
+
+- Projeto desenvolvido para fins educacionais.
+
+## 🧠 Documentação
+
+- Documentação do Front-End: [README.md](https://github.com/Felipe-G-Schmitt/finSecure/blob/release/dev/finsecure-front/README.md)
+- Documentação do Back-End: [README.md](https://github.com/Felipe-G-Schmitt/finSecure/blob/release/dev/finsecure-back/README.md)
 
 ## 💻 Equipe
 
