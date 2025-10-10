@@ -33,7 +33,7 @@ export function CategoryForm({ fetchCategories, currentCategory, setCurrentCateg
             handleCancel()
         } catch (error) {
             console.error('Erro ao salvar categoria:', error)
-            setError(error?.response?.data?.error?.message)
+            setError(error?.response?.data?.error?.message || 'Erro ao salvar categoria. Tente novamente.')
         }
     }
 

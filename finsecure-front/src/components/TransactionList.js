@@ -33,8 +33,8 @@ export function TransactionList({ transactions, onEdit, fetchTransactions }) {
             setModalFileUrl(fileUrl)
             setModalFileType(fileType)
         } catch (error) {
-            console.error("Erro ao buscar o comprovativo:", error)
-            setError("Não foi possível carregar o comprovativo.")
+            console.error("Erro ao buscar o comprovante:", error)
+            setError("Não foi possível carregar o comprovante.")
         } finally {
             setIsLoadingReceipt(false)
         }
@@ -51,7 +51,7 @@ export function TransactionList({ transactions, onEdit, fetchTransactions }) {
                 fetchTransactions()
             } catch (error) {
                 console.error('Erro ao excluir transação:', error)
-                setError('Erro ao excluir transação.')
+                setError(error?.response?.data?.error?.message || 'Erro ao excluir transação. Tente novamente.')
             }
         }
     }

@@ -61,7 +61,7 @@ export function Dashboard() {
             setTransactions(response.data.items)
         } catch (error) {
             console.error('Erro ao atualizar transações:', error)
-            setError("Erro ao atualizar transações.")
+            setError(error?.response?.data?.error?.message || 'Erro ao atualizar transações. Tente novamente.')
         }
     }
 

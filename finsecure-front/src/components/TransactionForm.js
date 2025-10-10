@@ -71,7 +71,7 @@ export function TransactionForm({ categories, fetchTransactions, currentTransact
             handleCancel()
         } catch (error) {
             console.error('Erro ao salvar transação:', error)
-            setError('Erro ao salvar transação.')
+            setError(error.response?.data?.error?.message || 'Erro ao salvar transação. Tente novamente.')
         }
     }
 

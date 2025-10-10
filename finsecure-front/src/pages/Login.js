@@ -17,7 +17,7 @@ export function Login() {
             navigate('/dashboard')
         } catch (error) {
             console.error('Erro no login:', error)
-            setError(error.response?.data?.error?.message)
+            setError(error.response?.data?.error?.message || 'Erro no login. Tente novamente.')
         }
     }
 

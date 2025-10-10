@@ -22,7 +22,7 @@ export function Register() {
             navigate('/login')
         } catch (error) {
             console.error('Erro no registo:', error)
-            setError('Erro ao registar. Tente novamente.')
+            setError(error.response?.data?.error?.message || 'Erro no registo. Tente novamente.')
         }
     }
 
