@@ -13,6 +13,26 @@
     gap: 1rem;
     width: 100%;
     flex-wrap: wrap;
+    align-items: center;
+}
+
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.theme-toggle-button {
+    background-color: var(--color-border);
+    color: var(--color-text-primary);
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle-button:hover {
+    background-color: var(--color-background);
 }
 
 @media (min-width: 768px) {
@@ -25,12 +45,6 @@
     .dashboard-header-actions {
         width: auto;
     }
-}
-
-.dashboard-content {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
 }
 
 @media (min-width: 1024px) {

@@ -1,43 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
-import api from '../services/api';
+import { api } from '../services/api'
 
-import CategoryList from '../components/CategoryList';
-import CategoryForm from '../components/CategoryForm';
+import { CategoryList } from '../components/CategoryList'
+import { CategoryForm } from '../components/CategoryForm'
 
-import '../styles/Category.css';
+import '../styles/Category.css'
 
-const Categories = () => {
-    const [categories, setCategories] = useState([]);
-    const [currentCategory, setCurrentCategory] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+export function Categories() {
+    const [categories, setCategories] = useState([])
+    const [currentCategory, setCurrentCategory] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
 
     const fetchCategories = async () => {
         try {
-            setIsLoading(true);
-            const response = await api.get('/categories');
-            setCategories(response.data.items);
+            setIsLoading(true)
+            const response = await api.get('/categories')
+            setCategories(response.data.items)
         } catch (error) {
-            console.error('Erro ao buscar categorias:', error);
+            console.error('Erro ao buscar categorias:', error)
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
     useEffect(() => {
-        fetchCategories();
-    }, []);
+        fetchCategories()
+    }, [])
 
     const handleEdit = (category) => {
-        setCurrentCategory(category);
-    };
+        setCurrentCategory(category)
+    }
 
     return (
         <div className="category-page container">
             <header className="category-header">
-                <h1>Gerir Categorias</h1>
+                <h1>Gerenciar Categorias</h1>
                 <Link to="/dashboard" className="button link">Voltar ao Dashboard</Link>
             </header>
 
@@ -55,7 +55,5 @@ const Categories = () => {
                 />
             </main>
         </div>
-    );
-};
-
-export default Categories;
+    )
+}

@@ -29,7 +29,7 @@
 .transaction-list li {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: 1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius);
@@ -45,10 +45,13 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    margin-right: 1rem;
+    flex: 1;
 }
 
 .description {
     font-weight: 500;
+    word-break: break-word;
 }
 
 .date {
@@ -73,9 +76,27 @@
     background: none;
     border: none;
     padding: 0;
-    margin-top: 0.5rem;
     font-size: 0.9rem;
     color: var(--color-primary);
     font-weight: 500;
     cursor: pointer;
+    align-self: flex-start;
+}
+
+.transaction-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.transaction-actions .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.transaction-actions .button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
 }
