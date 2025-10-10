@@ -4,12 +4,15 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from '../services/api'
 
+import { Alert } from '../components/Alert'
+
 import '../styles/Form.css'
 
 export function Register() {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState(null)
     const navigate = useNavigate()
 
     const handleRegister = async (e) => {
@@ -19,14 +22,15 @@ export function Register() {
             navigate('/login')
         } catch (error) {
             console.error('Erro no registo:', error)
-            alert('Erro ao registar. Tente novamente.')
+            setError('Erro ao registar. Tente novamente.')
         }
     }
 
     return (
         <div className="form-container">
+            {error && <Alert message={error} onClose={() => setError(null)} />}
             <div className="form-box card">
-                <h2>Registo</h2>
+                <h2>Registro</h2>
                 <form onSubmit={handleRegister} className="form-content">
                     <input
                         type="text"
@@ -49,7 +53,7 @@ export function Register() {
                         placeholder="Senha"
                         required
                     />
-                    <button type="submit" className="button button-primary">Registar</button>
+                    <button type="submit" className="button button-primary">Registrar</button>
                 </form>
                 <p>Já tem uma conta? <a href="/login">Faça login</a></p>
             </div>

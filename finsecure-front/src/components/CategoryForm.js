@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 
+import { Alert } from './Alert'
+
 import { api } from '../services/api'
 
 export function CategoryForm({ fetchCategories, currentCategory, setCurrentCategory }) {
     const [name, setName] = useState('')
     const [type, setType] = useState('despesa')
-
+    const [error, setError] = useState(null)
+   
     useEffect(() => {
         if (currentCategory) {
             setName(currentCategory.name)
@@ -30,7 +33,7 @@ export function CategoryForm({ fetchCategories, currentCategory, setCurrentCateg
             handleCancel()
         } catch (error) {
             console.error('Erro ao salvar categoria:', error)
-            alert('Erro ao salvar categoria.')
+            setError(error?.response?.data?.error?.message)
         }
     }
 
@@ -40,6 +43,7 @@ export function CategoryForm({ fetchCategories, currentCategory, setCurrentCateg
 
     return (
         <div className="category-form card">
+            {error && <Alert message={error} onClose={() => setError(null)} />}
             <h3>{currentCategory ? 'Editar Categoria' : 'Nova Categoria'}</h3>
             <form onSubmit={handleSubmit}>
                 <input

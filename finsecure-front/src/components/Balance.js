@@ -1,3 +1,5 @@
+import { formatMoney } from '../utils/MaskUtils'
+
 import '../styles/Balance.css'
 
 export function Balance({ transactions }) {
@@ -20,16 +22,16 @@ export function Balance({ transactions }) {
             <div className="balance-card card">
                 <h4>Saldo Total</h4>
                 <p className={total >= 0 ? 'receita' : 'despesa'}>
-                    R$ {total.toFixed(2)}
+                    {formatMoney(total)}
                 </p>
             </div>
             <div className="balance-card card">
                 <h4>Receitas</h4>
-                <p className="receita">R$ {receita.toFixed(2)}</p>
+                <p className="receita">{formatMoney(receita)}</p>
             </div>
             <div className="balance-card card">
                 <h4>Despesas</h4>
-                <p className="despesa">R$ {despesa.toFixed(2)}</p>
+                <p className="despesa">{formatMoney(despesa)}</p>
             </div>
         </div>
     )

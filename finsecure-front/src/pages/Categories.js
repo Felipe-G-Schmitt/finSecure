@@ -37,7 +37,7 @@ export function Categories() {
     return (
         <div className="category-page container">
             <header className="category-header">
-                <h1>Gerir Categorias</h1>
+                <h1>Gerenciar Categorias</h1>
                 <Link to="/dashboard" className="button link">Voltar ao Dashboard</Link>
             </header>
 

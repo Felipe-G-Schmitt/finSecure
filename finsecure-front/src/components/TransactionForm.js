@@ -1,16 +1,31 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 
 import { api } from '../services/api'
 
+import { Alert } from './Alert'
+
 import '../styles/Transaction.css'
 
-export function TransactionForm({ categories, fetchTransactions }) {
+export function TransactionForm({ categories, fetchTransactions, currentTransaction, setCurrentTransaction }) {
     const [description, setDescription] = useState('')
     const [value, setValue] = useState('')
     const [date, setDate] = useState('')
     const [type, setType] = useState('despesa')
     const [categoryId, setCategoryId] = useState('')
     const [receipt, setReceipt] = useState(null)
+    const [error, setError] = useState(null)
+
+    useEffect(() => {
+        if (currentTransaction) {
+            setDescription(currentTransaction.description)
+            setValue(currentTransaction.value)
+            setDate(currentTransaction.date)
+            setType(currentTransaction.type)
+            setCategoryId(currentTransaction.categoryId)
+        } else {
+            resetForm()
+        }
+    }, [currentTransaction])
 
     const filteredCategories = useMemo(() => {
         if (!Array.isArray(categories)) return []
@@ -19,6 +34,15 @@ export function TransactionForm({ categories, fetchTransactions }) {
 
     const handleFileChange = (e) => {
         setReceipt(e.target.files[0])
+    }
+
+    const resetForm = () => {
+        setDescription('')
+        setValue('')
+        setDate('')
+        setType('despesa')
+        setCategoryId('')
+        setReceipt(null)
     }
 
     const handleSubmit = async (e) => {
@@ -34,21 +58,26 @@ export function TransactionForm({ categories, fetchTransactions }) {
         }
 
         try {
-            await api.post('/transactions', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            })
+            if (currentTransaction) {
+                await api.put(`/transactions/${currentTransaction.id}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                })
+            } else {
+                await api.post('/transactions', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                })
+            }
             fetchTransactions()
-            setDescription('')
-            setValue('')
-            setDate('')
-            setType('despesa')
-            setCategoryId('')
-            setReceipt(null)
-            e.target.reset()
+            handleCancel()
         } catch (error) {
-            console.error('Erro ao criar transação:', error)
-            alert('Erro ao adicionar transação.')
+            console.error('Erro ao salvar transação:', error)
+            setError('Erro ao salvar transação.')
         }
+    }
+
+    const handleCancel = () => {
+        setCurrentTransaction(null)
+        resetForm()
     }
 
     const handleTypeChange = (e) => {
@@ -58,7 +87,8 @@ export function TransactionForm({ categories, fetchTransactions }) {
 
     return (
         <div className="transaction-form card">
-            <h3>Nova Transação</h3>
+            {error && <Alert message={error} onClose={() => setError(null)} />}
+            <h3>{currentTransaction ? 'Editar Transação' : 'Nova Transação'}</h3>
             <form onSubmit={handleSubmit}>
                 <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrição" required />
                 <input type="number" step="0.01" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Valor" required />
@@ -83,7 +113,16 @@ export function TransactionForm({ categories, fetchTransactions }) {
                     <label htmlFor="receipt-upload">Comprovativo (Opcional)</label>
                     <input id="receipt-upload" type="file" onChange={handleFileChange} />
                 </div>
-                <button type="submit" className="button button-primary" disabled={filteredCategories.length === 0}>Adicionar</button>
+                <div className="form-buttons">
+                    <button type="submit" className="button button-primary" disabled={filteredCategories.length === 0}>
+                        {currentTransaction ? 'Salvar Alterações' : 'Adicionar'}
+                    </button>
+                    {currentTransaction && (
+                        <button type="button" className="button" onClick={handleCancel}>
+                            Cancelar
+                        </button>
+                    )}
+                </div>
             </form>
         </div>
     )

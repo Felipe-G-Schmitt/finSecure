@@ -3,13 +3,19 @@ import { useState } from 'react'
 import { api } from '../services/api'
 
 import { ReceiptModal } from './ReceiptModal'
+import { Alert } from './Alert'
+
+import { useConfirm } from '../contexts/ConfirmationContext'
+import { formatMoney } from '../utils/MaskUtils'
 
 import '../styles/Transaction.css'
 
-export function TransactionList({ transactions }) {
+export function TransactionList({ transactions, onEdit, fetchTransactions }) {
     const [modalFileUrl, setModalFileUrl] = useState(null)
     const [modalFileType, setModalFileType] = useState(null)
     const [isLoadingReceipt, setIsLoadingReceipt] = useState(false)
+    const [error, setError] = useState(null)
+    const confirm = useConfirm()
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
@@ -28,9 +34,25 @@ export function TransactionList({ transactions }) {
             setModalFileType(fileType)
         } catch (error) {
             console.error("Erro ao buscar o comprovativo:", error)
-            alert("Não foi possível carregar o comprovativo.")
+            setError("Não foi possível carregar o comprovativo.")
         } finally {
             setIsLoadingReceipt(false)
+        }
+    }
+
+    const handleDelete = async (id) => {
+        const confirmed = await confirm(
+            'Confirmar Exclusão',
+            'Tem a certeza de que deseja excluir esta transação?'
+        )
+        if (confirmed) {
+            try {
+                await api.delete(`/transactions/${id}`)
+                fetchTransactions()
+            } catch (error) {
+                console.error('Erro ao excluir transação:', error)
+                setError('Erro ao excluir transação.')
+            }
         }
     }
 
@@ -44,6 +66,7 @@ export function TransactionList({ transactions }) {
 
     return (
         <>
+            {error && <Alert message={error} onClose={() => setError(null)} />}
             <div className="transaction-list card">
                 <h3>Últimas Transações</h3>
                 <ul>
@@ -59,14 +82,20 @@ export function TransactionList({ transactions }) {
                                             onClick={() => handleViewReceipt(transaction.receiptUrl)}
                                             disabled={isLoadingReceipt}
                                         >
-                                            {isLoadingReceipt ? 'Carregando...' : 'Ver Comprovativo'}
+                                            {isLoadingReceipt ? 'Carregando...' : 'Ver comprovante'}
                                         </button>
                                     )}
                                 </div>
-                                <span className={`value ${transaction.type}`}>
-                                    {transaction.type === 'despesa' ? '- ' : '+ '}
-                                    R$ {parseFloat(transaction.value).toFixed(2)}
-                                </span>
+                                <div className="transaction-actions">
+                                    <span className={`value ${transaction.type}`}>
+                                        {transaction.type === 'despesa' ? '- ' : '+ '}
+                                            {formatMoney(parseFloat(transaction.value))}
+                                    </span>
+                                    <div className="action-buttons">
+                                        <button className="button" onClick={() => onEdit(transaction)}>Editar</button>
+                                        <button className="button button-danger" onClick={() => handleDelete(transaction.id)}>Excluir</button>
+                                    </div>
+                                </div>
                             </li>
                         ))
                     ) : (

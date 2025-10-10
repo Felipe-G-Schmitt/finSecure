@@ -3,12 +3,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from '../services/api'
+import { Alert } from '../components/Alert'
 
 import '../styles/Form.css'
 
 export function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState(null)
     const navigate = useNavigate()
 
     const handleLogin = async (e) => {
@@ -19,12 +21,13 @@ export function Login() {
             navigate('/dashboard')
         } catch (error) {
             console.error('Erro no login:', error)
-            alert('Falha no login. Verifique as suas credenciais.')
+            setError(error.response?.data?.error?.message)
         }
     }
 
     return (
         <div className="form-container">
+            {error && <Alert message={error} onClose={() => setError(null)} />}
             <div className="form-box card">
                 <h2>Login</h2>
                 <form onSubmit={handleLogin} className="form-content">
@@ -44,7 +47,7 @@ export function Login() {
                     />
                     <button type="submit" className="button button-primary">Entrar</button>
                 </form>
-                <p>Não tem uma conta? <a href="/register">Registe-se</a></p>
+                <p>Não tem uma conta? <a href="/register">Registre-se</a></p>
             </div>
         </div>
     )

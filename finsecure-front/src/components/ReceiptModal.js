@@ -13,7 +13,7 @@ export function ReceiptModal({ fileUrl, fileType, onClose }) {
 
     const renderContent = () => {
         if (fileType && fileType.startsWith('image/')) {
-            return <img src={fileUrl} alt="Comprovativo da Transação" />
+            return <img src={fileUrl} alt="Comprovante da Transação" />
         }
         if (fileType === 'application/pdf') {
             return (
@@ -25,7 +25,7 @@ export function ReceiptModal({ fileUrl, fileType, onClose }) {
         return (
             <div style={{ padding: '2rem', textAlign: 'center' }}>
                 <p>Não é possível exibir este tipo de ficheiro diretamente.</p>
-                <a href={fileUrl} download="comprovativo" className="button">Clique aqui para descarregar o ficheiro</a>
+                <a href={fileUrl} download="Comprovante" className="button">Clique aqui para descarregar o ficheiro</a>
             </div>
         )
     }
@@ -33,11 +33,11 @@ export function ReceiptModal({ fileUrl, fileType, onClose }) {
     return (
         <div className="modal-backdrop" onClick={handleBackdropClick}>
             <div className="modal-content">
-                <button className="modal-close-button" onClick={onClose}>
-                    &times
-                </button>
                 {renderContent()}
             </div>
+            <button className="modal-close-button" onClick={onClose}>
+                &times;
+            </button>
         </div>
     )
 }
