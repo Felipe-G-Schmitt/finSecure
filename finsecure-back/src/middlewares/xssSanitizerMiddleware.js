@@ -26,9 +26,6 @@ const sanitizeData = (data) => {
 }
 
 const xssSanitizer = (req, res, next) => {
-  if (req.body) {
-    req.body = sanitizeData(req.body)
-  }
   if (req.query) {
     req.query = sanitizeData(req.query)
   }
