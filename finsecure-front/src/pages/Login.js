@@ -1,30 +1,33 @@
-import React, { useState } from 'react';
+import { useState } from 'react'
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 
-import api from '../services/api';
+import { api } from '../services/api'
+import { Alert } from '../components/Alert'
 
-import '../styles/Form.css';
+import '../styles/Form.css'
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+export function Login() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [error, setError] = useState(null)
+    const navigate = useNavigate()
 
     const handleLogin = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         try {
-            const response = await api.post('/login', { email, password });
-            localStorage.setItem('token', response.data.token);
-            navigate('/dashboard');
+            const response = await api.post('/login', { email, password })
+            localStorage.setItem('token', response.data.token)
+            navigate('/dashboard')
         } catch (error) {
-            console.error('Erro no login:', error);
-            alert('Falha no login. Verifique as suas credenciais.');
+            console.error('Erro no login:', error)
+            setError(error.response?.data?.error?.message)
         }
-    };
+    }
 
     return (
         <div className="form-container">
+            {error && <Alert message={error} onClose={() => setError(null)} />}
             <div className="form-box card">
                 <h2>Login</h2>
                 <form onSubmit={handleLogin} className="form-content">
@@ -44,10 +47,8 @@ const Login = () => {
                     />
                     <button type="submit" className="button button-primary">Entrar</button>
                 </form>
-                <p>Não tem uma conta? <a href="/register">Registe-se</a></p>
+                <p>Não tem uma conta? <a href="/register">Registre-se</a></p>
             </div>
         </div>
-    );
-};
-
-export default Login;
+    )
+}

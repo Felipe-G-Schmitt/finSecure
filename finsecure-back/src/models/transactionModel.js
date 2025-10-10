@@ -1,6 +1,6 @@
-const { DataTypes } = require("sequelize");
-const database = require("../config/database");
-const Category = require("./categoryModel");
+const { DataTypes } = require("sequelize")
+const database = require("../config/database")
+const Category = require("./categoryModel")
 
 const Transaction = database.define(
   "transaction",
@@ -38,11 +38,11 @@ const Transaction = database.define(
       type: DataTypes.VIRTUAL,
       get() {
         if (!this.getDataValue("receiptData")) {
-          return null;
+          return null
         }
-        const baseUrl = process.env.APP_URL || "http://localhost:3001";
-        const id = this.getDataValue("id");
-        return `${baseUrl}/api/transactions/${id}/receipt`;
+        const baseUrl = process.env.APP_URL || "http://localhost:3001"
+        const id = this.getDataValue("id")
+        return `${baseUrl}/api/transactions/${id}/receipt`
       },
     },
     categoryId: {
@@ -59,9 +59,9 @@ const Transaction = database.define(
       virtuals: true,
     },
   }
-);
+)
 
-Transaction.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
-Category.hasMany(Transaction, { foreignKey: "categoryId", as: "transactions" });
+Transaction.belongsTo(Category, { foreignKey: "categoryId", as: "category" })
+Category.hasMany(Transaction, { foreignKey: "categoryId", as: "transactions" })
 
-module.exports = Transaction;
+module.exports = Transaction

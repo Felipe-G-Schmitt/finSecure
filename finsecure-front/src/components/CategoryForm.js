@@ -1,45 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
-import api from '../services/api';
+import { Alert } from './Alert'
 
-const CategoryForm = ({ fetchCategories, currentCategory, setCurrentCategory }) => {
-    const [name, setName] = useState('');
-    const [type, setType] = useState('despesa');
+import { api } from '../services/api'
 
+export function CategoryForm({ fetchCategories, currentCategory, setCurrentCategory }) {
+    const [name, setName] = useState('')
+    const [type, setType] = useState('despesa')
+    const [error, setError] = useState(null)
+   
     useEffect(() => {
         if (currentCategory) {
-            setName(currentCategory.name);
-            setType(currentCategory.type);
+            setName(currentCategory.name)
+            setType(currentCategory.type)
         } else {
-            setName('');
-            setType('despesa');
+            setName('')
+            setType('despesa')
         }
-    }, [currentCategory]);
+    }, [currentCategory])
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const categoryData = { name, type };
+        e.preventDefault()
+        const categoryData = { name, type }
 
         try {
             if (currentCategory) {
-                await api.put(`/categories/${currentCategory.id}`, categoryData);
+                await api.put(`/categories/${currentCategory.id}`, categoryData)
             } else {
-                await api.post('/categories', categoryData);
+                await api.post('/categories', categoryData)
             }
-            fetchCategories();
-            handleCancel();
+            fetchCategories()
+            handleCancel()
         } catch (error) {
-            console.error('Erro ao salvar categoria:', error);
-            alert('Erro ao salvar categoria.');
+            console.error('Erro ao salvar categoria:', error)
+            setError(error?.response?.data?.error?.message)
         }
-    };
+    }
 
     const handleCancel = () => {
-        setCurrentCategory(null);
-    };
+        setCurrentCategory(null)
+    }
 
     return (
         <div className="category-form card">
+            {error && <Alert message={error} onClose={() => setError(null)} />}
             <h3>{currentCategory ? 'Editar Categoria' : 'Nova Categoria'}</h3>
             <form onSubmit={handleSubmit}>
                 <input
@@ -65,7 +69,5 @@ const CategoryForm = ({ fetchCategories, currentCategory, setCurrentCategory }) 
                 </div>
             </form>
         </div>
-    );
-};
-
-export default CategoryForm;
+    )
+}

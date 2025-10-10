@@ -1,26 +1,39 @@
-import React from 'react';
+import { useState } from 'react'
 
-import api from '../services/api';
+import { api } from '../services/api'
 
-const CategoryList = ({ categories, onEdit, fetchCategories, isLoading }) => {
+import { useConfirm } from '../contexts/ConfirmationContext'
+
+import { Alert } from './Alert'
+
+export function CategoryList({ categories, onEdit, fetchCategories, isLoading }) {
+    const [error, setError] = useState(null)
+    const confirm = useConfirm()
+
     const handleDelete = async (id) => {
-        if (window.confirm('Tem a certeza de que deseja excluir esta categoria?')) {
+        const confirmed = await confirm(
+            'Confirmar Exclusão',
+            'Tem a certeza de que deseja excluir esta categoria?'
+        )
+
+        if (confirmed) {
             try {
-                await api.delete(`/categories/${id}`);
-                fetchCategories();
+                await api.delete(`/categories/${id}`)
+                fetchCategories()
             } catch (error) {
-                console.error('Erro ao excluir categoria:', error);
-                alert('Erro ao excluir categoria. Verifique se não está a ser utilizada por alguma transação.');
+                console.error('Erro ao excluir categoria:', error)
+                setError('Erro ao excluir categoria. Verifique se não está a ser utilizada por alguma transação.')
             }
         }
-    };
+    }
 
     if (isLoading) {
-        return <div className="card"><p>A carregar categorias...</p></div>;
+        return <div className="card"><p>A carregar categorias...</p></div>
     }
 
     return (
         <div className="category-list card">
+            {error && <Alert message={error} onClose={() => setError(null)} />}
             <h3>Categorias Existentes</h3>
             <ul>
                 {categories && categories.length > 0 ? (
@@ -43,7 +56,5 @@ const CategoryList = ({ categories, onEdit, fetchCategories, isLoading }) => {
                 )}
             </ul>
         </div>
-    );
-};
-
-export default CategoryList;
+    )
+}
