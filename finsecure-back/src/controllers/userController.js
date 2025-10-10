@@ -1,11 +1,11 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const ConflictError = require('../errors/conflictError')
 const ForbiddenError = require('../errors/forbiddenError')
 const MissingValuesError = require('../errors/missingValuesError')
 const NotFoundError = require('../errors/notFoundError')
 
 const User = require('../models/userModel')
-const Transaction = require('../models/TransactionModel')
+const Transaction = require('../models/transactionModel')
 
 const { buildLinks } = require('../utils/linksHelper')
 
