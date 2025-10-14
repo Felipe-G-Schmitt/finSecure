@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
@@ -31,11 +31,17 @@ class AuthLogin {
          { expiresIn: "1h" }
       )
 
+      res.cookie('token', jwtToken, {
+         httpOnly: true,
+         secure: process.env.NODE_ENV === 'production',
+         sameSite: 'strict',
+         maxAge: 3600000
+      });
+
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
 
       return res.status(200).json({
          message: `Login realizado com sucesso para o email: '${email}'!`,
-         token: jwtToken,
          _links: {
             self: { href: `${baseUrl}/login`, method: 'POST' },
             register: { href: `${baseUrl}/register`, method: 'POST' },

@@ -1,39 +1,30 @@
+const { DataTypes } = require('sequelize')
+const bcrypt = require('bcryptjs')
 const database = require('../config/database')
+   
+const User = database.define('user', {
+   id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+   },
+   name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+   },
+   email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+   },
+   password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+   },
+})
 
-class User {
-   constructor() {
-      this.model = database.define('user', {
-         id: {
-            type: database.Sequelize.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-         },
-         name: {
-            type: database.Sequelize.STRING,
-            allowNull: false
-         },
-         email: {
-            type: database.Sequelize.STRING,
-            allowNull: false,
-            unique: true,
-            validate: {
-               isEmail: true
-            }
-         },
-         password: {
-            type: database.Sequelize.STRING,
-            allowNull: false
-         },
-         createdAt: {
-            type: database.Sequelize.DATE,
-            defaultValue: database.Sequelize.NOW
-         },
-         updatedAt: {
-            type: database.Sequelize.DATE,
-            defaultValue: database.Sequelize.NOW
-         }
-      })
-   }
+User.prototype.comparePassword = function (password) {
+   return bcrypt.compare(password, this.password)
 }
 
-module.exports = (new User).model
+module.exports = User

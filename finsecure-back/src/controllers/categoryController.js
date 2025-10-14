@@ -1,5 +1,5 @@
 const Category = require('../models/categoryModel')
-const Transaction = require('../models/TransactionModel')
+const Transaction = require('../models/transactionModel')
 const ConflictError = require('../errors/conflictError')
 const ForbiddenError = require('../errors/forbiddenError')
 const MissingValuesError = require('../errors/missingValuesError')
@@ -9,7 +9,7 @@ const { buildLinks } = require('../utils/linksHelper')
 
 class CategoryController {
    async getAllCategories(req, res) {
-      const categories = await Category.findAll()
+      const categories = await Category.findAll({ where: { userId: req.userId }, order: [['id', 'ASC']] })
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
 
       const result = categories.map(c => ({
@@ -27,7 +27,7 @@ class CategoryController {
       const id = Number(req.params.id)
       if (!id) throw new MissingValuesError({ id })
 
-      const category = await Category.findByPk(id)
+      const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
@@ -38,16 +38,22 @@ class CategoryController {
    }
 
    async createCategory(req, res) {
-      const { name } = req.body
-      if (!name) throw new MissingValuesError({ name })
+      const { name, type } = req.body
 
-      const existing = await Category.findOne({ where: { name } })
-      if (existing) throw new ConflictError(`Categoria '${name}' já existe!`)
+      if (!name || !type) throw new MissingValuesError({ name, type })
 
-      const category = await Category.create({ name })
+      if (!['receita', 'despesa'].includes(type))
+         throw new ConflictError(`O tipo '${type}' é inválido! Use 'receita' ou 'despesa'.`)
+
+      const existingCategory = await Category.findOne({ where: { name, userId: req.userId } })
+      if (existingCategory)
+         throw new ConflictError(`Já existe uma categoria com o nome '${name}'!`)
+
+      const category = await Category.create({ name, type, userId: req.userId })
+
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
-
       return res.status(201).json({
+         message: 'Categoria criada com sucesso!',
          category,
          _links: buildLinks(baseUrl, 'categories', category.id)
       })
@@ -55,22 +61,25 @@ class CategoryController {
 
    async updateCategory(req, res) {
       const id = Number(req.params.id)
-      const { name } = req.body
+      const { name, type } = req.body
 
-      if (!id || !name) throw new MissingValuesError({ id, name })
+      if (!id || !name || !type) throw new MissingValuesError({ id, name, type })
 
-      const category = await Category.findByPk(id)
+      const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 
-      const duplicate = await Category.findOne({ where: { name } })
+      const duplicate = await Category.findOne({ where: { name, userId: req.userId } })
       if (duplicate && duplicate.id !== id)
          throw new ConflictError(`Já existe uma categoria com o nome '${name}'!`)
 
-      category.name = name
-      await category.save()
+      if (!['receita', 'despesa'].includes(type))
+         throw new ConflictError(`O tipo '${type}' é inválido! Use 'receita' ou 'despesa'.`)
+
+      await category.update({ name, type })
 
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
       return res.status(200).json({
+         message: `Categoria ID '${id}' atualizada com sucesso!`,
          category,
          _links: buildLinks(baseUrl, 'categories', category.id)
       })
@@ -80,7 +89,7 @@ class CategoryController {
       const id = Number(req.params.id)
       if (!id) throw new MissingValuesError({ id })
 
-      const category = await Category.findByPk(id)
+      const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 
       const transactions = await Transaction.findAll({ where: { categoryId: id } })
@@ -92,7 +101,7 @@ class CategoryController {
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
       return res.status(200).json({
          message: `Categoria ID '${id}' deletada com sucesso!`,
-         _links: buildLinks(baseUrl, 'categories', category.id, ['POST', 'GET'])
+         _links: buildLinks(baseUrl, 'categories', id, ['POST', 'GET'])
       })
    }
 }

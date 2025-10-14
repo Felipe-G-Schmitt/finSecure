@@ -1,5 +1,5 @@
 {
-  "name": "project_",
+  "name": "finsecure-back",
   "version": "1.0.0",
   "main": "src/server.js",
   "directories": {
@@ -10,14 +10,19 @@
     "start": "node src/server.js"
   },
   "keywords": [],
-  "author": "Lincoln",
+  "author": "Lincoln e Felipe",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "he": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
     "mysql2": "^3.14.1",
     "mysql3": "^0.7.4",
     "pg": "^8.16.0",

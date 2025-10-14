@@ -1,11 +1,12 @@
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs')
 const ConflictError = require('../errors/conflictError')
 const ForbiddenError = require('../errors/forbiddenError')
 const MissingValuesError = require('../errors/missingValuesError')
 const NotFoundError = require('../errors/notFoundError')
 
 const User = require('../models/userModel')
-const Transaction = require('../models/TransactionModel')
+const Transaction = require('../models/transactionModel')
+const Category = require('../models/categoryModel')
 
 const { buildLinks } = require('../utils/linksHelper')
 
@@ -66,6 +67,10 @@ class UserController {
       if (!id || !name || !email || !password)
          throw new MissingValuesError({ id, name, email, password })
 
+      if (id !== req.userId) {
+         throw new ForbiddenError('Usuário não autorizado a editar outro usuário!')
+      }
+
       const user = await User.findByPk(id)
       if (!user) throw new NotFoundError(`Usuário ID '${id}' não encontrado!`)
 
@@ -93,12 +98,16 @@ class UserController {
       const user = await User.findByPk(id)
       if (!user) throw new NotFoundError(`Usuário ID '${id}' não encontrado!`)
 
-      if (req.user === id)
+      if (req.userId === id)
          throw new ForbiddenError('Usuário não autorizado a deletar a própria conta!')
 
       const userTransactions = await Transaction.findAll({ where: { userId: id } })
       if (userTransactions.length > 0)
          throw new ForbiddenError('Usuário possui transações associadas. Exclua-as antes de deletar.')
+
+      const userCategories = await Category.findAll({ where: { userId: id } })
+      if (userCategories.length > 0)
+         throw new ForbiddenError('Usuário possui categorias associadas. Exclua-as antes de deletar.')
 
       await user.destroy()
 
