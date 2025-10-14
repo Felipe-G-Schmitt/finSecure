@@ -4,8 +4,8 @@
 
 ## 🧠 Documentação
 
-- Documentação do Front-End: [README.md](https://github.com/Felipe-G-Schmitt/finSecure/blob/release/dev/finsecure-front/README.md)
-- Documentação do Back-End: [README.md](https://github.com/Felipe-G-Schmitt/finSecure/blob/release/dev/finsecure-back/Readme.md)
+- Documentação do Front-End: [README.md](https://github.com/Felipe-G-Schmitt/finSecure/blob/main/finsecure-front/README.md)
+- Documentação do Back-End: [README.md](https://github.com/Felipe-G-Schmitt/finSecure/blob/main/finsecure-back/Readme.md)
 
 ## 💻 Equipe
 
