@@ -2,7 +2,7 @@ const Transaction = require("../models/transactionModel")
 const Category = require("../models/categoryModel")
 const MissingValuesError = require("../errors/missingValuesError")
 const NotFoundError = require("../errors/notFoundError")
-const BadRequestError = require('../errors/BadRequestError')
+const BadRequestError = require('../errors/badRequestError')
 const { buildLinks } = require("../utils/linksHelper")
 
 class TransactionController {
