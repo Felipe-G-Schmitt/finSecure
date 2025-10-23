@@ -2,6 +2,7 @@ const Transaction = require("../models/transactionModel")
 const Category = require("../models/categoryModel")
 const MissingValuesError = require("../errors/missingValuesError")
 const NotFoundError = require("../errors/notFoundError")
+const BadRequestError = require('../errors/BadRequestError')
 const { buildLinks } = require("../utils/linksHelper")
 
 class TransactionController {
@@ -25,6 +26,9 @@ class TransactionController {
 
   async getTransactionById(req, res) {
     const id = Number(req.params.id)
+    if (isNaN(id) || id <= 0) {
+      throw new BadRequestError(`ID inválido: '${req.params.id}'. Deve ser um número inteiro positivo.`)
+    }
     if (!id) throw new MissingValuesError({ id })
 
     const transaction = await Transaction.findOne({
@@ -43,19 +47,25 @@ class TransactionController {
 
   async createTransaction(req, res) {
     const { value, type, description, categoryId, date } = req.body
+    const categoryIdNum = Number(categoryId)
+
+    if (isNaN(categoryIdNum) || categoryIdNum <= 0) {
+      throw new BadRequestError(`ID da Categoria inválido: '${categoryId}'. Deve ser um número inteiro positivo.`)
+    }
 
     if (!value || !type || !categoryId || !date) {
       throw new MissingValuesError({ value, type, categoryId, date })
     }
 
-    const category = await Category.findOne({ where: { id: categoryId, userId: req.userId } })
+    const category = await Category.findOne({ where: { id: categoryIdNum, userId: req.userId } })
     if (!category)
-      throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`)
+      throw new NotFoundError(`Categoria ID '${categoryIdNum}' não encontrada!`)
+
     const transactionData = {
       value,
       type,
       description,
-      categoryId,
+      categoryId: categoryIdNum,
       date,
       userId: req.userId
     }
@@ -77,7 +87,11 @@ class TransactionController {
   async updateTransaction(req, res) {
     const id = Number(req.params.id)
     const { value, type, description, categoryId, date } = req.body
+    const categoryIdNum = categoryId ? Number(categoryId) : undefined
 
+    if (isNaN(id) || id <= 0) {
+      throw new BadRequestError(`ID da Transação inválido: '${req.params.id}'. Deve ser um número inteiro positivo.`)
+    }
     if (!id) throw new MissingValuesError({ id })
 
     const transaction = await Transaction.findOne({ where: { id, userId: req.userId } })
@@ -85,9 +99,12 @@ class TransactionController {
       throw new NotFoundError(`Transação ID '${id}' não encontrada!`)
 
     if (categoryId) {
-      const category = await Category.findOne({ where: { id: categoryId, userId: req.userId } })
+      if (isNaN(categoryIdNum) || categoryIdNum <= 0) {
+        throw new BadRequestError(`ID da Categoria inválido: '${categoryId}'. Deve ser um número inteiro positivo.`)
+      }
+      const category = await Category.findOne({ where: { id: categoryIdNum, userId: req.userId } })
       if (!category)
-        throw new NotFoundError(`Categoria ID '${categoryId}' não encontrada!`)
+        throw new NotFoundError(`Categoria ID '${categoryIdNum}' não encontrada!`)
     }
 
     if (req.file) {
@@ -95,10 +112,10 @@ class TransactionController {
       transaction.receiptMimeType = req.file.mimetype
     }
 
-    transaction.value = value || transaction.value
+    transaction.value = value !== undefined ? value : transaction.value
     transaction.type = type || transaction.type
-    transaction.description = description || transaction.description
-    transaction.categoryId = categoryId || transaction.categoryId
+    transaction.description = description !== undefined ? description : transaction.description
+    transaction.categoryId = categoryIdNum !== undefined ? categoryIdNum : transaction.categoryId
     transaction.date = date || transaction.date
 
     await transaction.save()
@@ -112,6 +129,9 @@ class TransactionController {
 
   async deleteTransaction(req, res) {
     const id = Number(req.params.id)
+    if (isNaN(id) || id <= 0) {
+      throw new BadRequestError(`ID inválido: '${req.params.id}'. Deve ser um número inteiro positivo.`)
+    }
     if (!id) throw new MissingValuesError({ id })
 
     const transaction = await Transaction.findOne({ where: { id, userId: req.userId } })
@@ -130,6 +150,9 @@ class TransactionController {
 
   async getTransactionReceipt(req, res) {
     const id = Number(req.params.id)
+    if (isNaN(id) || id <= 0) {
+      throw new BadRequestError(`ID inválido: '${req.params.id}'. Deve ser um número inteiro positivo.`)
+    }
     if (!id) throw new MissingValuesError({ id })
 
     const transaction = await Transaction.findOne({
