@@ -4,6 +4,7 @@ const ConflictError = require('../errors/conflictError')
 const ForbiddenError = require('../errors/forbiddenError')
 const MissingValuesError = require('../errors/missingValuesError')
 const NotFoundError = require('../errors/notFoundError')
+const BadRequestError = require('../errors/badRequestError')
 
 const { buildLinks } = require('../utils/linksHelper')
 
@@ -25,6 +26,9 @@ class CategoryController {
 
    async getCategoryById(req, res) {
       const id = Number(req.params.id)
+      if (isNaN(id) || id <= 0) {
+         throw new BadRequestError(`ID inválido: '${req.params.id}'. Deve ser um número inteiro positivo.`)
+      }
       if (!id) throw new MissingValuesError({ id })
 
       const category = await Category.findOne({ where: { id, userId: req.userId } })
@@ -63,6 +67,9 @@ class CategoryController {
       const id = Number(req.params.id)
       const { name, type } = req.body
 
+      if (isNaN(id) || id <= 0) {
+         throw new BadRequestError(`ID inválido: '${req.params.id}'. Deve ser um número inteiro positivo.`)
+      }
       if (!id || !name || !type) throw new MissingValuesError({ id, name, type })
 
       const category = await Category.findOne({ where: { id, userId: req.userId } })
@@ -87,6 +94,10 @@ class CategoryController {
 
    async deleteCategory(req, res) {
       const id = Number(req.params.id)
+
+      if (isNaN(id) || id <= 0) {
+         throw new BadRequestError(`ID inválido: '${req.params.id}'. Deve ser um número inteiro positivo.`)
+      }
       if (!id) throw new MissingValuesError({ id })
 
       const category = await Category.findOne({ where: { id, userId: req.userId } })
@@ -105,5 +116,6 @@ class CategoryController {
       })
    }
 }
+
 
 module.exports = new CategoryController()
