@@ -1,22 +1,17 @@
-name: Horusec Security Scan
+name: SecurityPipeline
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+on: [push]
 
 jobs:
   horusec-security:
-    name: Horusec Security
+    name: horusec-security
     runs-on: ubuntu-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Running Horusec Security
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
-          horusec start -p ./ -e=true
+    - name: Check out code
+      uses: actions/checkout@v2
+      with: # Required when commit authors is enabled
+        fetch-depth: 0
+    - name: Running Horusec Security
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
+        horusec start -p="./" -e="true" --disable-docker="true" -o text
