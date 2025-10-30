@@ -1,11 +1,11 @@
 {
-  "horusecCli": {
-    "ignore": [
-      "package-lock.json",
-      "src/components/Alert.js",
-      "src/components/CategoryList.js",
-      "src/components/TransactionList.js",
-      "src/contexts/ConfirmationContext.js"
-    ]
-  }
+   "horusecCli": {
+      "ignore": [
+         "package-lock.json",
+         "finsecure-front/src/components/Alert.js",
+         "finsecure-front/src/components/CategoryList.js",
+         "finsecure-front/src/components/TransactionList.js",
+         "finsecure-front/src/contexts/ConfirmationContext.js"
+      ]
+   }
 }
