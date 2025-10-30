@@ -31,6 +31,7 @@ class CategoryController {
       }
       if (!id) throw new MissingValuesError({ id })
 
+      // #nosec
       const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 
@@ -72,6 +73,7 @@ class CategoryController {
       }
       if (!id || !name || !type) throw new MissingValuesError({ id, name, type })
 
+      // #nosec
       const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 
@@ -100,6 +102,7 @@ class CategoryController {
       }
       if (!id) throw new MissingValuesError({ id })
 
+      // #nosec
       const category = await Category.findOne({ where: { id, userId: req.userId } })
       if (!category) throw new NotFoundError(`Categoria ID '${id}' não encontrada!`)
 

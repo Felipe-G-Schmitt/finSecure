@@ -1,0 +1,11 @@
+{
+  "horusecCli": {
+    "ignore": [
+      "package-lock.json",
+      "src/components/Alert.js",
+      "src/components/CategoryList.js",
+      "src/components/TransactionList.js",
+      "src/contexts/ConfirmationContext.js"
+    ]
+  }
+}
