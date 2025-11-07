@@ -27,20 +27,19 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(xssSanitizer)
 
-app.post("/api/login", loginMiddleware.login)
-app.post("/api/register", registerMiddleware.register)
-app.post("/api/logout", (req, res) => {
-  res.clearCookie('token').json({ message: 'Logout realizado com sucesso!' });
-});
-
 app.get("/api/csrf-token", CsrfMiddleware.generateToken, (req, res) => {
   res.json({ csrfToken: req.csrfToken })
 })
 
 app.use(CsrfMiddleware.validateToken)
 
-app.use(tokenMiddleware.validateToken)
+app.post("/api/login", loginMiddleware.login)
+app.post("/api/register", registerMiddleware.register)
+app.post("/api/logout", (req, res) => {
+  res.clearCookie('token').json({ message: 'Logout realizado com sucesso!' });
+})
 
+app.use(tokenMiddleware.validateToken)
 
 app.use("/api", categoryRoutes)
 app.use("/api", transactionRoutes)
@@ -49,7 +48,7 @@ app.use("/api", userRoutes)
 
 app.use(errorHandlerMiddleware)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.API_PORT || 3001
 database.sync({ force: true })
   .then(() => {
     app.listen(Number(PORT), () =>

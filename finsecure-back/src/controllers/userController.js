@@ -14,16 +14,19 @@ const saltRounds = 10
 
 class UserController {
    async getAllUsers(req, res) {
-      const users = await User.findAll()
+      const user = await User.findByPk(req.userId)
+      if (!user) {
+         throw new NotFoundError(`Usuário ID '${req.userId}' não encontrado!`)
+      }
+      
       const baseUrl = `${req.protocol}://${req.get('host')}/api`
-
-      const result = users.map(u => ({
-         user: u,
-         _links: buildLinks(baseUrl, 'users', u.id)
-      }))
+      const result = [{
+         user,
+         _links: buildLinks(baseUrl, 'users', user.id)
+      }]
 
       return res.status(200).json({
-         count: users.length,
+         count: 1,
          items: result
       })
    }
@@ -31,6 +34,10 @@ class UserController {
    async getUserById(req, res) {
       const id = Number(req.params.id)
       if (!id) throw new MissingValuesError({ id })
+
+      if (id !== req.userId) {
+         throw new ForbiddenError('Acesso negado. Você só pode visualizar seu próprio perfil.')
+      }
 
       const user = await User.findByPk(id)
       if (!user) throw new NotFoundError(`Usuário ID '${id}' não encontrado!`)
@@ -98,8 +105,8 @@ class UserController {
       const user = await User.findByPk(id)
       if (!user) throw new NotFoundError(`Usuário ID '${id}' não encontrado!`)
 
-      if (req.userId === id)
-         throw new ForbiddenError('Usuário não autorizado a deletar a própria conta!')
+      if (req.userId !== id)
+         throw new ForbiddenError('Usuário não autorizado a deletar outra conta!')
 
       const userTransactions = await Transaction.findAll({ where: { userId: id } })
       if (userTransactions.length > 0)

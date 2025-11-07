@@ -19,7 +19,9 @@ class CsrfMiddleware {
       const cookieToken = req.cookies.csrfToken
 
       if (!csrfToken || !cookieToken || csrfToken !== cookieToken) {
-         console.error('Falha na validação do CSRF:', { header: csrfToken, cookie: cookieToken });
+         if (process.env.NODE_ENV !== 'production') {
+            console.error('Falha na validação do CSRF:', { header: csrfToken, cookie: cookieToken });
+         }
          return res.status(403).json({ error: 'Token CSRF inválido ou ausente!' })
       }
 

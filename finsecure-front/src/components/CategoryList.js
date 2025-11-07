@@ -40,7 +40,7 @@ export function CategoryList({ categories, onEdit, fetchCategories, isLoading })
                     categories.map(({ category }) => (
                         <li key={category.id}>
                             <div className="category-details">
-                                <span>{category.name}</span>
+                                <span className="category-name">{category.name}</span>
                                 <span className={`category-type type-${category.type}`}>
                                     {category.type}
                                 </span>

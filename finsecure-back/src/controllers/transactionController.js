@@ -1,3 +1,4 @@
+const he = require('he')
 const Transaction = require("../models/transactionModel")
 const Category = require("../models/categoryModel")
 const MissingValuesError = require("../errors/missingValuesError")
@@ -47,6 +48,9 @@ class TransactionController {
 
   async createTransaction(req, res) {
     const { value, type, description, categoryId, date } = req.body
+    
+    const sanitizedDescription = description ? he.escape(description) : undefined;
+    
     const categoryIdNum = Number(categoryId)
 
     if (isNaN(categoryIdNum) || categoryIdNum <= 0) {
@@ -64,7 +68,7 @@ class TransactionController {
     const transactionData = {
       value,
       type,
-      description,
+      description: sanitizedDescription,
       categoryId: categoryIdNum,
       date,
       userId: req.userId
@@ -87,6 +91,9 @@ class TransactionController {
   async updateTransaction(req, res) {
     const id = Number(req.params.id)
     const { value, type, description, categoryId, date } = req.body
+    
+    const sanitizedDescription = description !== undefined ? he.escape(description) : undefined;
+    
     const categoryIdNum = categoryId ? Number(categoryId) : undefined
 
     if (isNaN(id) || id <= 0) {
@@ -114,7 +121,7 @@ class TransactionController {
 
     transaction.value = value !== undefined ? value : transaction.value
     transaction.type = type || transaction.type
-    transaction.description = description !== undefined ? description : transaction.description
+    transaction.description = sanitizedDescription !== undefined ? sanitizedDescription : transaction.description
     transaction.categoryId = categoryIdNum !== undefined ? categoryIdNum : transaction.categoryId
     transaction.date = date || transaction.date
 
